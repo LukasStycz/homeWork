@@ -21,21 +21,21 @@ class HomeworkCubit extends Cubit<HomeworkState> {
       timeNow.hour,
       timeNow.minute,
     );
-    final homeWorkName = _addHomeWorkName(timeNow.day, lessonNumber);
+    final homeWorkName = _getHomeWorkName(timeNow.day, lessonNumber);
     print('zawolano czitusa');
     final prefs = await SharedPreferences.getInstance();
     final List<String> homeWorkList = prefs.getStringList("HOME_WORK") ?? [];
-    _checkIfNeedToAdd(homeWorkName, homeWorkList);
+    _checkAndAddToListIfNeeded(homeWorkName, homeWorkList);
     await prefs.setStringList("HOME_WORK", homeWorkList);
     final List<String> homeWorks = prefs.getStringList("HOME_WORK") ?? [];
     emit(HomeworkLoaded(homeWorks));
   }
 
-  int _getLessonNumber(
+  int? _getLessonNumber(
     int hour,
     int minute,
   ) {
-    final int lesson;
+    final int? lesson;
 
     if (((hour == 8) && (minute >= 0) && (minute <= 55))) {
       lesson = 1;
@@ -60,32 +60,34 @@ class HomeworkCubit extends Cubit<HomeworkState> {
     } else if (((hour == 14) && (minute > 35) && (minute <= 59)) ||
         ((hour == 15) && (minute >= 0) && (minute <= 30))) {
       lesson = 8;
+    } else {
+      lesson = null;
     }
-    else {lesson=6;}
-
     return lesson;
   }
 
-  String _addHomeWorkName(int dayNow, int lesson) {
-    String name='none';
-    if (dayNow == DateTime.monday) {
-      name = monday[lesson-1].title;
+  String _getHomeWorkName(int dayNow, int? lesson) {
+    String? name;
+    if (lesson == null) {
+      name = 'none';
+    } else if (dayNow == DateTime.monday) {
+      name = monday[lesson].title;
     } else if (dayNow == DateTime.tuesday) {
-      name = tuesday[lesson-1].title;
+      name = tuesday[lesson].title;
     } else if (dayNow == DateTime.wednesday) {
-      name = wednesday[lesson-1].title;
+      name = wednesday[lesson].title;
     } else if (dayNow == DateTime.thursday) {
-      name = thursday[lesson-1].title;
+      name = thursday[lesson].title;
     } else if (dayNow == DateTime.friday) {
-      name = friday[lesson-1].title;
+      name = friday[lesson].title;
     } else {
-      name = friday[2].title;
+      name = 'none';
     }
     return name;
   }
 }
 
-void _checkIfNeedToAdd(String lessonName, List homeWorkList) {
+void _checkAndAddToListIfNeeded(String lessonName, List homeWorkList) {
   if (((homeWorkList.isEmpty) || (lessonName != homeWorkList.last)) &&
       (lessonName != 'none')) {
     homeWorkList.add(lessonName);
