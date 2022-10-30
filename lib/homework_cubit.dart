@@ -21,6 +21,7 @@ class HomeworkCubit extends Cubit<HomeworkState> {
       timeNow.hour,
       timeNow.minute,
     );
+    if(lessonNumber!=null){
     final homeWorkName = _getHomeWorkName(timeNow.day, lessonNumber);
     print('zawolano czitusa');
     final prefs = await SharedPreferences.getInstance();
@@ -28,7 +29,7 @@ class HomeworkCubit extends Cubit<HomeworkState> {
     _checkAndAddToListIfNeeded(homeWorkName, homeWorkList);
     await prefs.setStringList("HOME_WORK", homeWorkList);
     final List<String> homeWorks = prefs.getStringList("HOME_WORK") ?? [];
-    emit(HomeworkLoaded(homeWorks));
+    emit(HomeworkLoaded(homeWorks));}
   }
 
   int? _getLessonNumber(
@@ -66,20 +67,18 @@ class HomeworkCubit extends Cubit<HomeworkState> {
     return lesson;
   }
 
-  String _getHomeWorkName(int dayNow, int? lesson) {
+  String _getHomeWorkName(int dayNow, int lesson) {
     String? name;
-    if (lesson == null) {
-      name = 'none';
-    } else if (dayNow == DateTime.monday) {
-      name = monday[lesson].title;
+     if (dayNow == DateTime.monday) {
+      name = monday[lesson-1].title;
     } else if (dayNow == DateTime.tuesday) {
-      name = tuesday[lesson].title;
+      name = tuesday[lesson-1].title;
     } else if (dayNow == DateTime.wednesday) {
-      name = wednesday[lesson].title;
+      name = wednesday[lesson-1].title;
     } else if (dayNow == DateTime.thursday) {
-      name = thursday[lesson].title;
+      name = thursday[lesson-1].title;
     } else if (dayNow == DateTime.friday) {
-      name = friday[lesson].title;
+      name = friday[lesson-1].title;
     } else {
       name = 'none';
     }
