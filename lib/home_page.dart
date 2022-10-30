@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:homeworkapp/homework_cubit.dart';
+// import 'package:bloc/';
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -24,7 +27,7 @@ class HomePage extends StatelessWidget {
             ],
           ),
         ),
-        body: _Pagess(),
+        body: _Pages(),
       ),
     );
   }
@@ -62,51 +65,50 @@ class _HomeWorksTab extends StatelessWidget {
 
 const double _tabBarIconSize = 50.0;
 
-
-class _Pagess extends StatelessWidget {
-  const _Pagess({Key? key}) : super(key: key);
+class _Pages extends StatelessWidget {
+  const _Pages({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return TabBarView(
-      children: [
-        Scaffold(
-            floatingActionButton: FloatingActionButton.large(
+    return BlocBuilder<HomeworkCubit, HomeworkState>(builder: (
+      BuildContext context,
+      HomeworkState state,
+    ) {
+        return TabBarView(
+          children: [
+            Scaffold(
+                floatingActionButton: FloatingActionButton.large(
               backgroundColor: Colors.white,
               foregroundColor: Colors.indigoAccent,
               splashColor: Colors.red,
-              onPressed: ,
-            )
-        ),
-        HomeWorkListLayout(homeWorks: homeWorks,),
-      ],
-    );
+              onPressed: () {
+                context.read<HomeworkCubit>().czitusek();
+              },
+            )),
+            if (state is HomeworkLoaded)
+            HomeWorkListLayout(homeWorks: state.homeWorks)
+            else const CircularProgressIndicator()
+          ],
+        );
+
+    });
   }
 }
 
-
-class HomeWorkListLayout extends StatefulWidget {
+class HomeWorkListLayout extends StatelessWidget {
   const HomeWorkListLayout({required this.homeWorks, Key? key})
       : super(key: key);
   final List<String> homeWorks;
 
   @override
-  State<HomeWorkListLayout> createState() => _HomeWorkListLayoutState();
-}
-
-class _HomeWorkListLayoutState extends State<HomeWorkListLayout> {
-
-  @override
   Widget build(BuildContext context) {
     return ListView.builder(
         itemBuilder: (BuildContext context, int index) {
-          return
-            Text(
-              widget.homeWorks.elementAt(index),
-              style:
-              const TextStyle(height: 5, fontSize: 30, color: Colors.red),
-            );
+          return Text(
+            homeWorks.elementAt(index),
+            style: const TextStyle(height: 5, fontSize: 30, color: Colors.red),
+          );
         },
-        itemCount: widget.homeWorks.length);
+        itemCount: homeWorks.length);
   }
 }
