@@ -82,7 +82,7 @@ class _Pages extends StatelessWidget {
               foregroundColor: Colors.indigoAccent,
               splashColor: Colors.red,
               onPressed: () {
-                context.read<HomeworkCubit>().czitusek();
+                context.read<HomeworkCubit>().addNewHomeWorkIfNeeded();
               },
             )),
             if (state is HomeworkLoaded)
