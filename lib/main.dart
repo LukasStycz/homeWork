@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:homeworkapp/home_page.dart';
-import 'package:homeworkapp/homework_cubit.dart';
+import 'package:homeworkapp/home_work_cubit/homework_cubit.dart';
 
 void main() {
   runApp(const MyApp());

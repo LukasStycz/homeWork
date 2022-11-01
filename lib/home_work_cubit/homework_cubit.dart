@@ -5,14 +5,24 @@ part 'homework_state.dart';
 
 class HomeworkCubit extends Cubit<HomeworkState> {
   HomeworkCubit() : super(const HomeworkInitial()) {
-    print('czitus hgwdp');
     _updateHomeWorks();
   }
 
   Future<void> _updateHomeWorks() async {
+    final timeNow = DateTime.now();
     final prefs = await SharedPreferences.getInstance();
+    final int dayOfListUpdate = prefs.getInt("DAY_OF_LIST_UPDATE") ?? 0;
+    if (dayOfListUpdate != timeNow.weekday) {
+      await prefs.remove("HOME_WORK");
+      final List<String> homeWorks = prefs.getStringList("HOME_WORK") ?? [];
+      emit(HomeworkLoaded(homeWorks));
+      print ("dzieje sie że lista się czyści");
+    }
+    else{
     final List<String> homeWorks = prefs.getStringList("HOME_WORK") ?? [];
     emit(HomeworkLoaded(homeWorks));
+    print ('dzieje się że lista porzechodzi dalej');
+    }
   }
 
   Future<void> addNewHomeWorkIfNeeded() async {
@@ -21,15 +31,17 @@ class HomeworkCubit extends Cubit<HomeworkState> {
       timeNow.hour,
       timeNow.minute,
     );
-    if(lessonNumber!=null){
-    final homeWorkName = _getHomeWorkName(timeNow.day, lessonNumber);
-    print('zawolano czitusa');
-    final prefs = await SharedPreferences.getInstance();
-    final List<String> homeWorkList = prefs.getStringList("HOME_WORK") ?? [];
-    _checkAndAddToListIfNeeded(homeWorkName, homeWorkList);
-    await prefs.setStringList("HOME_WORK", homeWorkList);
-    final List<String> homeWorks = prefs.getStringList("HOME_WORK") ?? [];
-    emit(HomeworkLoaded(homeWorks));}
+    if (lessonNumber != null) {
+      final homeWorkName = _getHomeWorkName(timeNow.weekday, lessonNumber);
+      final prefs = await SharedPreferences.getInstance();
+      final List<String> homeWorkList = prefs.getStringList("HOME_WORK") ?? [];
+      await prefs.setInt("DAY_OF_LIST_UPDATE", timeNow.weekday);
+      _checkAndAddToListIfNeeded(homeWorkName, homeWorkList);
+      await prefs.setStringList("HOME_WORK", homeWorkList);
+      final List<String> homeWorks = prefs.getStringList("HOME_WORK") ?? [];
+      emit(HomeworkLoaded(homeWorks));
+      print(homeWorks);
+    }
   }
 
   int? _getLessonNumber(
@@ -68,17 +80,17 @@ class HomeworkCubit extends Cubit<HomeworkState> {
   }
 
   String _getHomeWorkName(int dayNow, int lesson) {
-    String? name;
-     if (dayNow == DateTime.monday) {
-      name = monday[lesson-1].title;
+    final String name;
+    if (dayNow == DateTime.monday) {
+      name = monday[lesson - 1].title;
     } else if (dayNow == DateTime.tuesday) {
-      name = tuesday[lesson-1].title;
+      name = tuesday[lesson - 1].title;
     } else if (dayNow == DateTime.wednesday) {
-      name = wednesday[lesson-1].title;
+      name = wednesday[lesson - 1].title;
     } else if (dayNow == DateTime.thursday) {
-      name = thursday[lesson-1].title;
+      name = thursday[lesson - 1].title;
     } else if (dayNow == DateTime.friday) {
-      name = friday[lesson-1].title;
+      name = friday[lesson - 1].title;
     } else {
       name = 'none';
     }
@@ -93,11 +105,3 @@ void _checkAndAddToListIfNeeded(String lessonName, List homeWorkList) {
   }
 }
 
-class SubjectDecision {
-  int dayNow = 0;
-
-  void setWeekday() {
-    dayNow = DateTime.now().weekday;
-    print('funkcja weekday');
-  }
-}

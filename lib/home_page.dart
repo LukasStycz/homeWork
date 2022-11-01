@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:homeworkapp/homework_cubit.dart';
+import 'package:homeworkapp/home_work_cubit/homework_cubit.dart';
 // import 'package:bloc/';
 
 class HomePage extends StatelessWidget {
@@ -27,7 +27,7 @@ class HomePage extends StatelessWidget {
             ],
           ),
         ),
-        body: _Pages(),
+        body: const _Pages(),
       ),
     );
   }
@@ -74,23 +74,24 @@ class _Pages extends StatelessWidget {
       BuildContext context,
       HomeworkState state,
     ) {
-        return TabBarView(
-          children: [
-            Scaffold(
-                floatingActionButton: FloatingActionButton.large(
-              backgroundColor: Colors.white,
-              foregroundColor: Colors.indigoAccent,
-              splashColor: Colors.red,
-              onPressed: () {
-                context.read<HomeworkCubit>().addNewHomeWorkIfNeeded();
-              },
-            )),
-            if (state is HomeworkLoaded)
+      return TabBarView(
+        children: [
+          Scaffold(
+              backgroundColor: Colors.red,
+              floatingActionButton: FloatingActionButton.large(
+                backgroundColor: Colors.white,
+                foregroundColor: Colors.indigoAccent,
+                splashColor: Colors.red,
+                onPressed: () {
+                  context.read<HomeworkCubit>().addNewHomeWorkIfNeeded();
+                },
+              )),
+          if (state is HomeworkLoaded)
             HomeWorkListLayout(homeWorks: state.homeWorks)
-            else const CircularProgressIndicator()
-          ],
-        );
-
+          else
+            const CircularProgressIndicator()
+        ],
+      );
     });
   }
 }
