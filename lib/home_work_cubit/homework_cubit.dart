@@ -74,7 +74,7 @@ class HomeworkCubit extends Cubit<HomeworkState> {
         ((hour == 15) && (minute >= 0) && (minute <= 30))) {
       lesson = 8;
     } else {
-      lesson = null;
+      lesson = 4;
     }
     return lesson;
   }
