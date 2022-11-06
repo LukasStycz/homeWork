@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:homeworkapp/home_work_cubit/homework_cubit.dart';
+
+import 'lesson_plan-cubit/lessonplan_cubit.dart';
+
 // import 'package:bloc/';
 
 class HomePage extends StatelessWidget {
@@ -76,9 +79,9 @@ class _LessonPlanTab extends StatelessWidget {
         color: Colors.indigoAccent,
         size: _tabBarIconSize,
       ),
-    );  }
+    );
+  }
 }
-
 
 const double _tabBarIconSize = 50.0;
 
@@ -107,7 +110,16 @@ class _Pages extends StatelessWidget {
             HomeWorkListLayout(homeWorks: state.homeWorks)
           else
             const CircularProgressIndicator(),
-          LessonPlanLayout()
+          BlocBuilder<LessonPlanCubit, LessonPlanState>(builder: (
+              BuildContext context,
+              LessonPlanState state,
+              ) {
+              if ( state is LessonPlanMonday){
+                return
+                LessonPlanLayout(currentDayPlan: state.currentDayPlan, cardColorList: state.cardColorList, lessonHours: state.lessonHours);
+          } else
+               { const CircularProgressIndicator();}
+            }),
         ],
       );
     });
@@ -121,48 +133,58 @@ class HomeWorkListLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return
-        Container(
-          decoration: const BoxDecoration(
-              color: Colors.indigoAccent,
-          ),
-          child: ListView.builder(
-              itemBuilder: (BuildContext context, int index) {
-                return Container(
-
-                  margin: const EdgeInsets.only(left: 5, right: 5,top: 5),
-                  height: 60,
-                  width: 50,
-                  decoration: const BoxDecoration(
-                      color: Colors.black26,
-                      borderRadius:  BorderRadius.all(Radius.circular(10))
+    return Container(
+      decoration: const BoxDecoration(
+        color: Colors.indigoAccent,
+      ),
+      child: ListView.builder(
+          itemBuilder: (BuildContext context, int index) {
+            return Container(
+              margin: const EdgeInsets.only(left: 5, right: 5, top: 5),
+              height: 60,
+              width: 50,
+              decoration: const BoxDecoration(
+                  color: Colors.black26,
+                  borderRadius: BorderRadius.all(Radius.circular(10))),
+              child: Column(
+                children: [
+                  const SizedBox(
+                    height: 10,
                   ),
-                  child: Column(
-                    children: [
-                      const SizedBox(height: 10,),
-                      Text(
-                        homeWorks.elementAt(index),
-                        style: const TextStyle( fontSize: 30, color: Colors.red),
-                      ),
-                    ],
+                  Text(
+                    homeWorks.elementAt(index),
+                    style: const TextStyle(fontSize: 30, color: Colors.red),
                   ),
-                );
-              },
-              itemCount: homeWorks.length),
-        );
-
-
+                ],
+              ),
+            );
+          },
+          itemCount: homeWorks.length),
+    );
   }
 }
 
 class LessonPlanLayout extends StatelessWidget {
-   LessonPlanLayout({Key? key}) : super(key: key);
-  final List<String> lessonPlanDaysAndHours = ["Pon", "Wto", "Śro", "Czw", "Pią", "Lek"];
+  LessonPlanLayout({ required this.currentDayPlan,required this.cardColorList,required this.lessonHours, Key? key}) : super(key: key);
+  final List<String> lessonPlanDaysAndHours = [
+    "Pon",
+    "Wto",
+    "Śro",
+    "Czw",
+    "Pią",
+    "Lek"
+  ];
+final List<String> currentDayPlan;
+final List<List<Color>> cardColorList;
+  final List<int> lessonHours;
+
   @override
   Widget build(BuildContext context) {
-    return  Column(
+    return Column(
       children: [
-        const SizedBox(height: 20,),
+        const SizedBox(
+          height: 20,
+        ),
         SizedBox(
           height: 50,
           width: double.infinity,
@@ -170,38 +192,72 @@ class LessonPlanLayout extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             itemCount: lessonPlanDaysAndHours.length,
             itemBuilder: (BuildContext context, int index) {
-              return Container(
-                margin: const EdgeInsets.only(left: 5, right: 5),
-                height: 70,
-                width: 50,
-                decoration: const BoxDecoration(
-                    color: Colors.black26,
-                    borderRadius:  BorderRadius.all(Radius.circular(10))
-                ),
-                child: Column(
-                  children: [
-                    const SizedBox(height: 10,),
-                    Text(lessonPlanDaysAndHours[index], style: const TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold),),
-                  ],
+              return GestureDetector(
+                onTap: () {
+                  print('dzień$index');
+                },
+                child: Container(
+                  margin: const EdgeInsets.only(left: 5, right: 5),
+                  height: 70,
+                  width: 50,
+                  decoration: BoxDecoration(
+                      color: cardColorList[index][0],
+                      borderRadius:
+                          const BorderRadius.all(Radius.circular(10))),
+                  child: Column(
+                    children: [
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Text(
+                        lessonPlanDaysAndHours[index],
+                        style: TextStyle(
+                            fontSize: 18,
+                            color: cardColorList[index][1],
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
                 ),
               );
             },
           ),
         ),
-        const SizedBox(height: 20,),
+        const SizedBox(
+          height: 20,
+        ),
         Expanded(
           child: Container(
             width: double.infinity,
             decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(topLeft: Radius.circular(30), topRight: Radius.circular(30)),
-                boxShadow: [BoxShadow(blurRadius: 10.0)]
-            ),
+                color: Colors.white, boxShadow: [BoxShadow(blurRadius: 10.0)]),
+            child: ListView.builder(
+                itemBuilder: (BuildContext context, int index) {
+                  return Container(
+                    margin: const EdgeInsets.only(left: 5, right: 5, top: 5),
+                    height: 60,
+                    width: 50,
+                    decoration: const BoxDecoration(
+                        color: Colors.black26,
+                        borderRadius: BorderRadius.all(Radius.circular(10))),
+                    child: Column(
+                      children: [
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                          currentDayPlan.elementAt(index),
+                          style:
+                              const TextStyle(fontSize: 30, color: Colors.red),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+                itemCount: currentDayPlan.length),
           ),
         ),
       ],
     );
   }
-  }
-
-
+}
