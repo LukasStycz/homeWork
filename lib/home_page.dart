@@ -110,16 +110,22 @@ class _Pages extends StatelessWidget {
             HomeWorkListLayout(homeWorks: state.homeWorks)
           else
             const CircularProgressIndicator(),
-          BlocBuilder<LessonPlanCubit, LessonPlanState>(builder: (
+          BlocProvider(
+            create: (context) => LessonPlanCubit(),
+            child: BlocBuilder<LessonPlanCubit, LessonPlanState>(builder: (
               BuildContext context,
               LessonPlanState state2,
-              ) {
-              if ( state2 is LessonPlanMonday){
-                return
-                LessonPlanLayout(currentDayPlan: state2.currentDayPlan, cardColorList: state2.cardColorList, lessonHours: state2.lessonHours);
-          } else
-               {return const CircularProgressIndicator();}
+            ) {
+              if (state2 is LessonPlanMonday) {
+                return LessonPlanLayout(
+                    currentDayPlan: state2.currentDayPlan,
+                    cardColorList: state2.cardColorList,
+                    lessonHours: state2.lessonHours);
+              } else {
+                return const CircularProgressIndicator();
+              }
             }),
+          ),
         ],
       );
     });
@@ -165,7 +171,12 @@ class HomeWorkListLayout extends StatelessWidget {
 }
 
 class LessonPlanLayout extends StatelessWidget {
-  LessonPlanLayout({ required this.currentDayPlan,required this.cardColorList,required this.lessonHours, Key? key}) : super(key: key);
+  LessonPlanLayout(
+      {required this.currentDayPlan,
+      required this.cardColorList,
+      required this.lessonHours,
+      Key? key})
+      : super(key: key);
   final List<String> lessonPlanDaysAndHours = [
     "Pon",
     "Wto",
@@ -174,8 +185,8 @@ class LessonPlanLayout extends StatelessWidget {
     "Pią",
     "Lek"
   ];
-final List<String> currentDayPlan;
-final List<List<Color>> cardColorList;
+  final List<String> currentDayPlan;
+  final List<List<Color>> cardColorList;
   final List<int> lessonHours;
 
   @override
