@@ -112,13 +112,13 @@ class _Pages extends StatelessWidget {
             const CircularProgressIndicator(),
           BlocBuilder<LessonPlanCubit, LessonPlanState>(builder: (
               BuildContext context,
-              LessonPlanState state,
+              LessonPlanState state2,
               ) {
-              if ( state is LessonPlanMonday){
+              if ( state2 is LessonPlanMonday){
                 return
-                LessonPlanLayout(currentDayPlan: state.currentDayPlan, cardColorList: state.cardColorList, lessonHours: state.lessonHours);
+                LessonPlanLayout(currentDayPlan: state2.currentDayPlan, cardColorList: state2.cardColorList, lessonHours: state2.lessonHours);
           } else
-               { const CircularProgressIndicator();}
+               {return const CircularProgressIndicator();}
             }),
         ],
       );
