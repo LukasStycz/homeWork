@@ -9,24 +9,22 @@ class LessonPlanInitial extends LessonPlanState {
   const LessonPlanInitial();
 }
 
-class LessonPlanMonday extends LessonPlanState {
+class LessonPlan extends LessonPlanState {
   final List<List<Color>> cardColorList;
   final List<String> currentDayPlan;
-  final List<int> lessonHours;
 
-  const LessonPlanMonday(
-       this.cardColorList,this.currentDayPlan,this.lessonHours );
+
+  const LessonPlan(
+       this.cardColorList,this.currentDayPlan );
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is LessonPlanMonday &&
+      other is LessonPlan &&
           runtimeType == other.runtimeType &&
           cardColorList == other.cardColorList &&
-          currentDayPlan == other.currentDayPlan &&
-          lessonHours == other.lessonHours;
+          currentDayPlan == other.currentDayPlan;
 
   @override
-  int get hashCode =>
-      cardColorList.hashCode ^ currentDayPlan.hashCode ^ lessonHours.hashCode;
+  int get hashCode => cardColorList.hashCode ^ currentDayPlan.hashCode;
 }

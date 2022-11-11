@@ -114,13 +114,13 @@ class _Pages extends StatelessWidget {
             create: (context) => LessonPlanCubit(),
             child: BlocBuilder<LessonPlanCubit, LessonPlanState>(builder: (
               BuildContext context,
-              LessonPlanState state2,
+              LessonPlanState state,
             ) {
-              if (state2 is LessonPlanMonday) {
+              if (state is LessonPlan) {
                 return LessonPlanLayout(
-                    currentDayPlan: state2.currentDayPlan,
-                    cardColorList: state2.cardColorList,
-                    lessonHours: state2.lessonHours);
+                  currentDayPlan: state.currentDayPlan,
+                  cardColorList: state.cardColorList,
+                );
               } else {
                 return const CircularProgressIndicator();
               }
@@ -172,10 +172,7 @@ class HomeWorkListLayout extends StatelessWidget {
 
 class LessonPlanLayout extends StatelessWidget {
   LessonPlanLayout(
-      {required this.currentDayPlan,
-      required this.cardColorList,
-      required this.lessonHours,
-      Key? key})
+      {required this.currentDayPlan, required this.cardColorList, Key? key})
       : super(key: key);
   final List<String> lessonPlanDaysAndHours = [
     "Pon",
@@ -187,7 +184,6 @@ class LessonPlanLayout extends StatelessWidget {
   ];
   final List<String> currentDayPlan;
   final List<List<Color>> cardColorList;
-  final List<int> lessonHours;
 
   @override
   Widget build(BuildContext context) {
@@ -205,7 +201,25 @@ class LessonPlanLayout extends StatelessWidget {
             itemBuilder: (BuildContext context, int index) {
               return GestureDetector(
                 onTap: () {
-                  print('dzień$index');
+                  if (index == 1) {
+                    context.read<LessonPlanCubit>().loadTuesday();
+                    print('dzień$index');
+                  } else if (index == 2) {
+                    context.read<LessonPlanCubit>().loadWendesday();
+                    print('dzień$index');
+                  } else if (index == 3) {
+                    context.read<LessonPlanCubit>().loadThursday();
+                    print('dzień$index');
+                  } else if (index == 4) {
+                    context.read<LessonPlanCubit>().loadFriday();
+                    print('dzień$index');
+                  } else if (index == 5) {
+                    context.read<LessonPlanCubit>().loadHours();
+                    print('dzień$index');
+                  } else {
+                    context.read<LessonPlanCubit>().loadMonday();
+                    print('dzień$index');
+                  }
                 },
                 child: Container(
                   margin: const EdgeInsets.only(left: 5, right: 5),
