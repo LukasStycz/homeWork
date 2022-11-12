@@ -16,7 +16,7 @@ class HomePage extends StatelessWidget {
     return DefaultTabController(
       length: _tabSize,
       child: Scaffold(
-        backgroundColor: Colors.indigoAccent,
+        backgroundColor: Colors.yellow,
         appBar: AppBar(
           foregroundColor: Colors.indigoAccent,
           backgroundColor: Colors.white,
@@ -120,6 +120,7 @@ class _Pages extends StatelessWidget {
                 return LessonPlanLayout(
                   currentDayPlan: state.currentDayPlan,
                   cardColorList: state.cardColorList,
+                  gestureDetectorIndex: state.gestureDetectorIndex,
                 );
               } else {
                 return const CircularProgressIndicator();
@@ -141,7 +142,7 @@ class HomeWorkListLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
-        color: Colors.indigoAccent,
+        color: Colors.green,
       ),
       child: ListView.builder(
           itemBuilder: (BuildContext context, int index) {
@@ -172,7 +173,10 @@ class HomeWorkListLayout extends StatelessWidget {
 
 class LessonPlanLayout extends StatelessWidget {
   LessonPlanLayout(
-      {required this.currentDayPlan, required this.cardColorList, Key? key})
+      {required this.currentDayPlan,
+      required this.cardColorList,
+      required this.gestureDetectorIndex,
+      Key? key})
       : super(key: key);
   final List<String> lessonPlanDaysAndHours = [
     "Pon",
@@ -184,7 +188,7 @@ class LessonPlanLayout extends StatelessWidget {
   ];
   final List<String> currentDayPlan;
   final List<List<Color>> cardColorList;
-
+  final int gestureDetectorIndex;
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -201,25 +205,7 @@ class LessonPlanLayout extends StatelessWidget {
             itemBuilder: (BuildContext context, int index) {
               return GestureDetector(
                 onTap: () {
-                  if (index == 1) {
-                    context.read<LessonPlanCubit>().loadTuesday();
-                    print('dzień$index');
-                  } else if (index == 2) {
-                    context.read<LessonPlanCubit>().loadWendesday();
-                    print('dzień$index');
-                  } else if (index == 3) {
-                    context.read<LessonPlanCubit>().loadThursday();
-                    print('dzień$index');
-                  } else if (index == 4) {
-                    context.read<LessonPlanCubit>().loadFriday();
-                    print('dzień$index');
-                  } else if (index == 5) {
-                    context.read<LessonPlanCubit>().loadHours();
-                    print('dzień$index');
-                  } else {
-                    context.read<LessonPlanCubit>().loadMonday();
-                    print('dzień$index');
-                  }
+                  context.read<LessonPlanCubit>().changePlanLayout(index);
                 },
                 child: Container(
                   margin: const EdgeInsets.only(left: 5, right: 5),
@@ -251,35 +237,47 @@ class LessonPlanLayout extends StatelessWidget {
         const SizedBox(
           height: 20,
         ),
-        Expanded(
-          child: Container(
-            width: double.infinity,
-            decoration: const BoxDecoration(
-                color: Colors.white, boxShadow: [BoxShadow(blurRadius: 10.0)]),
-            child: ListView.builder(
-                itemBuilder: (BuildContext context, int index) {
-                  return Container(
-                    margin: const EdgeInsets.only(left: 5, right: 5, top: 5),
-                    height: 60,
-                    width: 50,
-                    decoration: const BoxDecoration(
-                        color: Colors.black26,
-                        borderRadius: BorderRadius.all(Radius.circular(10))),
-                    child: Column(
-                      children: [
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Text(
-                          currentDayPlan.elementAt(index),
-                          style:
-                              const TextStyle(fontSize: 30, color: Colors.red),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-                itemCount: currentDayPlan.length),
+        Container(
+          width: double.infinity,
+          height: 525,
+          decoration: const BoxDecoration(
+              color: Colors.purple, boxShadow: [BoxShadow(blurRadius: 10.0)]),
+          child: ListView.builder(
+              itemBuilder: (BuildContext context, int index) {
+                return Container(
+                  margin: const EdgeInsets.only(left: 5, right: 5, top: 5),
+                  height: 60,
+                  width: 50,
+                  decoration: const BoxDecoration(
+                      color: Colors.black26,
+                      borderRadius: BorderRadius.all(Radius.circular(10))),
+                  child: Column(
+                    children: [
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Text(
+                        currentDayPlan.elementAt(index),
+                        style: const TextStyle(fontSize: 30, color: Colors.red),
+                      ),
+                    ],
+                  ),
+                );
+              },
+              itemCount: currentDayPlan.length),
+        ),
+        const SizedBox(
+          height: 75,
+        ),
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+              fixedSize: const Size(240, 50), primary: Colors.black26),
+          onPressed: () {
+            print(gestureDetectorIndex);
+          },
+          child: const Text(
+            'Zmień',
+            style: TextStyle(fontSize: 25),
           ),
         ),
       ],

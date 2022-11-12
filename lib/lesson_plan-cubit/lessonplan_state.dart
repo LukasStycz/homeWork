@@ -10,21 +10,26 @@ class LessonPlanInitial extends LessonPlanState {
 }
 
 class LessonPlan extends LessonPlanState {
+  final int gestureDetectorIndex;
   final List<List<Color>> cardColorList;
   final List<String> currentDayPlan;
 
 
   const LessonPlan(
-       this.cardColorList,this.currentDayPlan );
+       this.cardColorList,this.currentDayPlan,this.gestureDetectorIndex );
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is LessonPlan &&
           runtimeType == other.runtimeType &&
+          gestureDetectorIndex == other.gestureDetectorIndex &&
           cardColorList == other.cardColorList &&
           currentDayPlan == other.currentDayPlan;
 
   @override
-  int get hashCode => cardColorList.hashCode ^ currentDayPlan.hashCode;
+  int get hashCode =>
+      gestureDetectorIndex.hashCode ^
+      cardColorList.hashCode ^
+      currentDayPlan.hashCode;
 }
