@@ -96,19 +96,24 @@ class _Pages extends StatelessWidget {
       return TabBarView(
         children: [
           Scaffold(
-              backgroundColor: Colors.red,
-              floatingActionButton: FloatingActionButton.large(
-                backgroundColor: Colors.white,
-                foregroundColor: Colors.indigoAccent,
-                splashColor: Colors.red,
-                onPressed: () {
-                  context.read<HomeworkCubit>().addNewHomeWorkIfNeeded();
-                },
-              )),
+            backgroundColor: Colors.red,
+            floatingActionButton: FloatingActionButton.large(
+              backgroundColor: Colors.white,
+              foregroundColor: Colors.indigoAccent,
+              splashColor: Colors.red,
+              onPressed: () {
+                context.read<HomeworkCubit>().addNewHomeWorkIfNeeded();
+              },
+            ),
+          ),
+
+          /// to może jako funkcja i w parametrze podajesz state
           if (state is HomeworkLoaded)
             HomeWorkListLayout(homeWorks: state.homeWorks)
           else
             const CircularProgressIndicator(),
+
+          /// mozliwe,ze to jednak moze tu zostac, musze sie zastanowić
           BlocProvider(
             create: (context) => LessonPlanCubit(),
             child: BlocBuilder<LessonPlanCubit, LessonPlanState>(builder: (
@@ -116,11 +121,13 @@ class _Pages extends StatelessWidget {
               LessonPlanState state,
             ) {
               if (state is LessonPlan) {
+                /// jak dasz po ostatnim argumencie przecinek to Ci ladniej poformatuje (po state.lessonPlanOrChangePlan)
                 return LessonPlanAndChangePlanLayout(
-                    currentDayPlan: state.currentDayPlan,
-                    cardColorList: state.cardColorList,
-                    gestureDetectorIndex: state.gestureDetectorIndex,
-                    lessonPlanOrChangePlan: state.lessonPlanOrChangePlan);
+                  currentDayPlan: state.currentDayPlan,
+                  cardColorList: state.cardColorList,
+                  gestureDetectorIndex: state.gestureDetectorIndex,
+                  lessonPlanOrChangePlan: state.lessonPlanOrChangePlan,
+                );
               } else {
                 return const CircularProgressIndicator();
               }
@@ -150,8 +157,9 @@ class HomeWorkListLayout extends StatelessWidget {
               height: 60,
               width: 50,
               decoration: const BoxDecoration(
-                  color: Colors.black26,
-                  borderRadius: BorderRadius.all(Radius.circular(10))),
+                color: Colors.black26,
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+              ),
               child: Column(
                 children: [
                   const SizedBox(
@@ -200,6 +208,7 @@ class LessonPlanAndChangePlanLayout extends StatelessWidget {
   final List<String> currentDayPlan;
   final List<List<Color>> cardColorList;
   final int gestureDetectorIndex;
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -259,6 +268,15 @@ class LessonPlanAndChangePlanLayout extends StatelessWidget {
               color: Colors.purple, boxShadow: [BoxShadow(blurRadius: 10.0)]),
           child: ListView.builder(
               itemBuilder: (BuildContext context, int index) {
+
+
+                /// znowu Ci sie powtarzaja czesci kodu, w ifie daj tylko to co się zmienia czyli z tego co widze to np. child Padding
+                /// nie jestem pewny tez czy w przypadku pierwszego ifa potrzebuejesz tam textFormField a nie tylko text? formfield jest wtedy gdy chcesz coś w tym miejscu pisać
+                /// nie rozumiem tez zmiennej gestureDetectorIndex
+                ///
+                /// do tego ten kod ponizej to moglaby byc jakas funckja ktorej nazwa mowilaby od razu co to robi, bo teraz nie do konca wiadomo
+                ///
+                /// ogolnie bedziemy musieli to przegadac zdzwnaniac sie, ewentualnei jutro jeszcze zajrze
                 if ((lessonPlanOrChangePlan == false) &&
                     (gestureDetectorIndex != 5)) {
                   return Container(
@@ -341,8 +359,11 @@ class LessonPlanAndChangePlanLayout extends StatelessWidget {
         ),
         ElevatedButton(
             style: ElevatedButton.styleFrom(
+              /// primary jest deprecated,czyli podpowiada,ze niedlugo moze to przestac działać. Sprawdź jak powinno to sie robic w google
                 fixedSize: const Size(240, 50), primary: Colors.black26),
             onPressed: () {
+              /// znowu powtarzasz kod.
+              /// przypisz do zmiennej true lub false w zalezlnosci od tego co jest w lessonPlanOrChangePlan i wtedy w drugim parametrze changePlanLayout podajesz tę zmienną
               if (lessonPlanOrChangePlan == true) {
                 context
                     .read<LessonPlanCubit>()

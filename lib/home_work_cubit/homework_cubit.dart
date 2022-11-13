@@ -12,6 +12,18 @@ class HomeworkCubit extends Cubit<HomeworkState> {
     final timeNow = DateTime.now();
     final prefs = await SharedPreferences.getInstance();
     final int dayOfListUpdate = prefs.getInt("DAY_OF_LIST_UPDATE") ?? 0;
+
+    /// uzywaj autoformatowania kodu bo maszz zle nawiasy
+    /// zauwaz,ze w ifach robisz te same rzeczy, czyli je powtarzasz,
+    ///
+    /// np.
+    /// if (dayOfListUpdate != timeNow.weekday) {
+    ///     await prefs.remove("HOME_WORK");
+    /// }
+    ///
+    /// final List<String> homeWorks = prefs.getStringList("HOME_WORK") ?? [];
+    /// emit(HomeworkLoaded(homeWorks));
+
     if (dayOfListUpdate != timeNow.weekday) {
       await prefs.remove("HOME_WORK");
       final List<String> homeWorks = prefs.getStringList("HOME_WORK") ?? [];
@@ -31,13 +43,17 @@ class HomeworkCubit extends Cubit<HomeworkState> {
       timeNow.hour,
       timeNow.minute,
     );
+
     if (lessonNumber != null) {
       final homeWorkName = _getHomeWorkName(timeNow.weekday, lessonNumber);
       final prefs = await SharedPreferences.getInstance();
+      /// HOME_WORK i inne klucze przypisz do const zmiennej
       final List<String> homeWorkList = prefs.getStringList("HOME_WORK") ?? [];
       await prefs.setInt("DAY_OF_LIST_UPDATE", timeNow.weekday);
       _checkAndAddToListIfNeeded(homeWorkName, homeWorkList);
       await prefs.setStringList("HOME_WORK", homeWorkList);
+
+      /// ponizsza linia niepotrzebna - przeciez przed chwila do prefsow wstadziles homeWorkList - wiec zrób emit(HomeworkLoaded(homeWorksList))
       final List<String> homeWorks = prefs.getStringList("HOME_WORK") ?? [];
       emit(HomeworkLoaded(homeWorks));
       print(homeWorks);
@@ -98,6 +114,7 @@ class HomeworkCubit extends Cubit<HomeworkState> {
   }
 }
 
+/// FORMATOWANIE
 void _checkAndAddToListIfNeeded(String lessonName, List homeWorkList) {
   if (((homeWorkList.isEmpty) || (lessonName != homeWorkList.last)) &&
       (lessonName != 'none')) {
