@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:homeworkapp/home_work_cubit/homework_cubit.dart';
 
 import 'lesson_plan-cubit/lessonplan_cubit.dart';
-
-// import 'package:bloc/';
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -117,11 +116,11 @@ class _Pages extends StatelessWidget {
               LessonPlanState state,
             ) {
               if (state is LessonPlan) {
-                return LessonPlanLayout(
-                  currentDayPlan: state.currentDayPlan,
-                  cardColorList: state.cardColorList,
-                  gestureDetectorIndex: state.gestureDetectorIndex,
-                );
+                return LessonPlanAndChangePlanLayout(
+                    currentDayPlan: state.currentDayPlan,
+                    cardColorList: state.cardColorList,
+                    gestureDetectorIndex: state.gestureDetectorIndex,
+                    lessonPlanOrChangePlan: state.lessonPlanOrChangePlan);
               } else {
                 return const CircularProgressIndicator();
               }
@@ -171,11 +170,12 @@ class HomeWorkListLayout extends StatelessWidget {
   }
 }
 
-class LessonPlanLayout extends StatelessWidget {
-  LessonPlanLayout(
+class LessonPlanAndChangePlanLayout extends StatelessWidget {
+  LessonPlanAndChangePlanLayout(
       {required this.currentDayPlan,
       required this.cardColorList,
       required this.gestureDetectorIndex,
+      required this.lessonPlanOrChangePlan,
       Key? key})
       : super(key: key);
   final List<String> lessonPlanDaysAndHours = [
@@ -186,6 +186,17 @@ class LessonPlanLayout extends StatelessWidget {
     "Pią",
     "Lek"
   ];
+  final List<TextEditingController> _controller = [
+    TextEditingController(),
+    TextEditingController(),
+    TextEditingController(),
+    TextEditingController(),
+    TextEditingController(),
+    TextEditingController(),
+    TextEditingController(),
+    TextEditingController(),
+  ];
+  final bool lessonPlanOrChangePlan;
   final List<String> currentDayPlan;
   final List<List<Color>> cardColorList;
   final int gestureDetectorIndex;
@@ -205,7 +216,11 @@ class LessonPlanLayout extends StatelessWidget {
             itemBuilder: (BuildContext context, int index) {
               return GestureDetector(
                 onTap: () {
-                  context.read<LessonPlanCubit>().changePlanLayout(index);
+                  if (lessonPlanOrChangePlan == true) {
+                    context
+                        .read<LessonPlanCubit>()
+                        .changePlanLayout(index, lessonPlanOrChangePlan);
+                  }
                 },
                 child: Container(
                   margin: const EdgeInsets.only(left: 5, right: 5),
@@ -244,25 +259,80 @@ class LessonPlanLayout extends StatelessWidget {
               color: Colors.purple, boxShadow: [BoxShadow(blurRadius: 10.0)]),
           child: ListView.builder(
               itemBuilder: (BuildContext context, int index) {
-                return Container(
-                  margin: const EdgeInsets.only(left: 5, right: 5, top: 5),
-                  height: 60,
-                  width: 50,
-                  decoration: const BoxDecoration(
-                      color: Colors.black26,
-                      borderRadius: BorderRadius.all(Radius.circular(10))),
-                  child: Column(
-                    children: [
-                      const SizedBox(
-                        height: 10,
+                if ((lessonPlanOrChangePlan == false) &&
+                    (gestureDetectorIndex != 5)) {
+                  return Container(
+                    margin: const EdgeInsets.only(left: 5, right: 5, top: 5),
+                    height: 60,
+                    width: 50,
+                    decoration: const BoxDecoration(
+                        color: Colors.black26,
+                        borderRadius: BorderRadius.all(Radius.circular(10))),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 16),
+                      child: TextFormField(
+                        style: const TextStyle(fontSize: 20, color: Colors.red),
+                        decoration: InputDecoration(
+                          border: const UnderlineInputBorder(),
+                          hintText: '${index + 1} Lekcja',
+                        ),
                       ),
-                      Text(
-                        currentDayPlan.elementAt(index),
-                        style: const TextStyle(fontSize: 30, color: Colors.red),
+                    ),
+                  );
+                  //todo zmienić  on pres przycisku  wzależnosci od gestureDetectorIndex będzie zapisywał do różnych list w shared preferences;
+                } else if ((lessonPlanOrChangePlan == false) &&
+                    (gestureDetectorIndex == 5)) {
+                  return Container(
+                    margin: const EdgeInsets.only(left: 5, right: 5, top: 5),
+                    height: 60,
+                    width: 50,
+                    decoration: const BoxDecoration(
+                        color: Colors.black26,
+                        borderRadius: BorderRadius.all(Radius.circular(10))),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 0),
+                      child: TextFormField(
+                        controller: _controller[index],
+                        onEditingComplete: () {
+                          print(_controller[index].text);
+                        },
+                        style: const TextStyle(fontSize: 20, color: Colors.red),
+                        keyboardType: TextInputType.number,
+                        textAlignVertical: TextAlignVertical.bottom,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(RegExp('[0-9.-]'))
+                        ],
+                        decoration: const InputDecoration(
+                          border: UnderlineInputBorder(),
+                          hintText: 'gg.mm-gg.mm',
+                        ),
                       ),
-                    ],
-                  ),
-                );
+                    ),
+                  );
+                } else {
+                  return Container(
+                    margin: const EdgeInsets.only(left: 5, right: 5, top: 5),
+                    height: 60,
+                    width: 50,
+                    decoration: const BoxDecoration(
+                        color: Colors.black26,
+                        borderRadius: BorderRadius.all(Radius.circular(10))),
+                    child: Column(
+                      children: [
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                          currentDayPlan.elementAt(index),
+                          style:
+                              const TextStyle(fontSize: 30, color: Colors.red),
+                        ),
+                      ],
+                    ),
+                  );
+                }
               },
               itemCount: currentDayPlan.length),
         ),
@@ -270,17 +340,46 @@ class LessonPlanLayout extends StatelessWidget {
           height: 75,
         ),
         ElevatedButton(
-          style: ElevatedButton.styleFrom(
-              fixedSize: const Size(240, 50), primary: Colors.black26),
-          onPressed: () {
-            print(gestureDetectorIndex);
-          },
-          child: const Text(
-            'Zmień',
-            style: TextStyle(fontSize: 25),
-          ),
-        ),
+            style: ElevatedButton.styleFrom(
+                fixedSize: const Size(240, 50), primary: Colors.black26),
+            onPressed: () {
+              if (lessonPlanOrChangePlan == true) {
+                context
+                    .read<LessonPlanCubit>()
+                    .changePlanLayout(gestureDetectorIndex, false);
+                print(gestureDetectorIndex);
+              } else {
+                context
+                    .read<LessonPlanCubit>()
+                    .changePlanLayout(gestureDetectorIndex, true);
+                print(gestureDetectorIndex);
+              }
+            },
+            child: LessonPlanOrChangePlanButton(
+                lessonPlanOrChangePlan: lessonPlanOrChangePlan)),
       ],
     );
+  }
+}
+
+class LessonPlanOrChangePlanButton extends StatelessWidget {
+  const LessonPlanOrChangePlanButton(
+      {required this.lessonPlanOrChangePlan, Key? key})
+      : super(key: key);
+  final bool lessonPlanOrChangePlan;
+
+  @override
+  Widget build(BuildContext context) {
+    if (lessonPlanOrChangePlan == true) {
+      return const Text(
+        'Zmień',
+        style: TextStyle(fontSize: 25),
+      );
+    } else {
+      return const Text(
+        'Zapisz',
+        style: TextStyle(fontSize: 25),
+      );
+    }
   }
 }

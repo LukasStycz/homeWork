@@ -10,13 +10,13 @@ class LessonPlanInitial extends LessonPlanState {
 }
 
 class LessonPlan extends LessonPlanState {
+  final bool lessonPlanOrChangePlan;
   final int gestureDetectorIndex;
   final List<List<Color>> cardColorList;
   final List<String> currentDayPlan;
 
-
-  const LessonPlan(
-       this.cardColorList,this.currentDayPlan,this.gestureDetectorIndex );
+  const LessonPlan(this.cardColorList, this.currentDayPlan,
+      this.gestureDetectorIndex, this.lessonPlanOrChangePlan);
 
   @override
   bool operator ==(Object other) =>
