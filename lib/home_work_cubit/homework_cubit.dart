@@ -11,44 +11,43 @@ class HomeworkCubit extends Cubit<HomeworkState> {
   Future<void> _updateHomeWorks() async {
     final timeNow = DateTime.now();
     final prefs = await SharedPreferences.getInstance();
-    final int dayOfListUpdate = prefs.getInt("DAY_OF_LIST_UPDATE") ?? 0;
+    final int dayOfListUpdate = prefs.getInt(dayOfListUpdateKey) ?? 0;
     if (dayOfListUpdate != timeNow.weekday) {
-      await prefs.remove("HOME_WORK");
-      final List<String> homeWorks = prefs.getStringList("HOME_WORK") ?? [];
+      await prefs.remove(homeWorkKey);
+      final List<String> homeWorks = prefs.getStringList(homeWorkKey) ?? [];
       emit(HomeworkLoaded(homeWorks));
-      print ("dzieje sie że lista się czyści");
-    }
-    else{
-    final List<String> homeWorks = prefs.getStringList("HOME_WORK") ?? [];
-    emit(HomeworkLoaded(homeWorks));
-    print ('dzieje się że lista porzechodzi dalej');
+      print("dzieje sie że lista się czyści");
+    } else {
+      final List<String> homeWorks = prefs.getStringList(homeWorkKey) ?? [];
+      emit(HomeworkLoaded(homeWorks));
+      print('dzieje się że lista porzechodzi dalej');
     }
   }
 
   Future<void> addNewHomeWorkIfNeeded() async {
     final timeNow = DateTime.now();
-    final lessonNumber = _getLessonNumber(
+    final int lessonNumber = _getLessonNumber(
       timeNow.hour,
       timeNow.minute,
     );
-    if (lessonNumber != null) {
+    if (lessonNumber != noSuchLesson) {
       final homeWorkName = _getHomeWorkName(timeNow.weekday, lessonNumber);
       final prefs = await SharedPreferences.getInstance();
-      final List<String> homeWorkList = prefs.getStringList("HOME_WORK") ?? [];
-      await prefs.setInt("DAY_OF_LIST_UPDATE", timeNow.weekday);
+      final List<String> homeWorkList = prefs.getStringList(homeWorkKey) ?? [];
+      await prefs.setInt(dayOfListUpdateKey, timeNow.weekday);
       _checkAndAddToListIfNeeded(homeWorkName, homeWorkList);
-      await prefs.setStringList("HOME_WORK", homeWorkList);
-      final List<String> homeWorks = prefs.getStringList("HOME_WORK") ?? [];
-      emit(HomeworkLoaded(homeWorks));
-      print(homeWorks);
+      await prefs.setStringList(homeWorkKey, homeWorkList);
+      emit(HomeworkLoaded(homeWorkList));
+      print(homeWorkList);
+
     }
   }
 
-  int? _getLessonNumber(
+  int _getLessonNumber(
     int hour,
     int minute,
   ) {
-    final int? lesson;
+    final int lesson;
 
     if (((hour == 8) && (minute >= 0) && (minute <= 55))) {
       lesson = 1;
@@ -74,7 +73,7 @@ class HomeworkCubit extends Cubit<HomeworkState> {
         ((hour == 15) && (minute >= 0) && (minute <= 30))) {
       lesson = 8;
     } else {
-      lesson = 4;
+      lesson = 2;
     }
     return lesson;
   }
@@ -83,7 +82,7 @@ class HomeworkCubit extends Cubit<HomeworkState> {
     final String name;
     if (dayNow == DateTime.monday) {
       name = monday[lesson - 1].title;
-    } else if (dayNow == DateTime.tuesday) {
+    } else if (dayNow == DateTime.saturday) {
       name = tuesday[lesson - 1].title;
     } else if (dayNow == DateTime.wednesday) {
       name = wednesday[lesson - 1].title;
@@ -104,4 +103,6 @@ void _checkAndAddToListIfNeeded(String lessonName, List homeWorkList) {
     homeWorkList.add(lessonName);
   }
 }
-
+const int noSuchLesson=500;
+const String homeWorkKey = "HOME_WORK";
+const String dayOfListUpdateKey = "DAY_OF_LIST_UPDATE";

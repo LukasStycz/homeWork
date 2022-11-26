@@ -11,25 +11,27 @@ class LessonPlanInitial extends LessonPlanState {
 
 class LessonPlan extends LessonPlanState {
   final bool lessonPlanOrChangePlan;
-  final int gestureDetectorIndex;
+  final int whichDayIsActive;
   final List<List<Color>> cardColorList;
   final List<String> currentDayPlan;
 
   const LessonPlan(this.cardColorList, this.currentDayPlan,
-      this.gestureDetectorIndex, this.lessonPlanOrChangePlan);
+      this.whichDayIsActive, this.lessonPlanOrChangePlan);
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is LessonPlan &&
           runtimeType == other.runtimeType &&
-          gestureDetectorIndex == other.gestureDetectorIndex &&
+          lessonPlanOrChangePlan == other.lessonPlanOrChangePlan &&
+          whichDayIsActive == other.whichDayIsActive &&
           cardColorList == other.cardColorList &&
           currentDayPlan == other.currentDayPlan;
 
   @override
   int get hashCode =>
-      gestureDetectorIndex.hashCode ^
+      lessonPlanOrChangePlan.hashCode ^
+      whichDayIsActive.hashCode ^
       cardColorList.hashCode ^
       currentDayPlan.hashCode;
 }

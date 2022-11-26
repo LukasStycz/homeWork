@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:homeworkapp/home_work_cubit/homework_cubit.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'lesson_plan-cubit/lessonplan_cubit.dart';
 
@@ -17,11 +18,11 @@ class HomePage extends StatelessWidget {
       child: Scaffold(
         backgroundColor: Colors.yellow,
         appBar: AppBar(
-          foregroundColor: Colors.indigoAccent,
-          backgroundColor: Colors.white,
+          foregroundColor: _tabBarPrimaryColor,
+          backgroundColor: _tabBarSecondaryColor,
           title: const Text("Prace domowe"),
           bottom: const TabBar(
-            indicatorColor: Colors.indigoAccent,
+            indicatorColor: _tabBarPrimaryColor,
             indicatorWeight: 4.0,
             isScrollable: true,
             tabs: [
@@ -45,7 +46,7 @@ class _AddHomeWorkTab extends StatelessWidget {
     return const Tab(
       icon: Icon(
         Icons.playlist_add_outlined,
-        color: Colors.indigoAccent,
+        color: _tabBarPrimaryColor,
         size: _tabBarIconSize,
       ),
     );
@@ -60,7 +61,7 @@ class _HomeWorksTab extends StatelessWidget {
     return const Tab(
       icon: Icon(
         Icons.home_work,
-        color: Colors.indigoAccent,
+        color: _tabBarPrimaryColor,
         size: _tabBarIconSize,
       ),
     );
@@ -75,14 +76,16 @@ class _LessonPlanTab extends StatelessWidget {
     return const Tab(
       icon: Icon(
         Icons.table_rows_rounded,
-        color: Colors.indigoAccent,
+        color: _tabBarPrimaryColor,
         size: _tabBarIconSize,
       ),
     );
   }
 }
 
+const Color _tabBarPrimaryColor = Colors.indigoAccent;
 const double _tabBarIconSize = 50.0;
+const Color _tabBarSecondaryColor = Colors.white;
 
 class _Pages extends StatelessWidget {
   const _Pages({Key? key}) : super(key: key);
@@ -96,19 +99,18 @@ class _Pages extends StatelessWidget {
       return TabBarView(
         children: [
           Scaffold(
-              backgroundColor: Colors.red,
-              floatingActionButton: FloatingActionButton.large(
-                backgroundColor: Colors.white,
-                foregroundColor: Colors.indigoAccent,
-                splashColor: Colors.red,
-                onPressed: () {
-                  context.read<HomeworkCubit>().addNewHomeWorkIfNeeded();
-                },
-              )),
-          if (state is HomeworkLoaded)
-            HomeWorkListLayout(homeWorks: state.homeWorks)
-          else
-            const CircularProgressIndicator(),
+            backgroundColor: Colors.red,
+            floatingActionButton: FloatingActionButton.large(
+              backgroundColor: _tabBarSecondaryColor,
+              foregroundColor: _tabBarPrimaryColor,
+              splashColor: Colors.red,
+              onPressed: () {
+                context.read<HomeworkCubit>().addNewHomeWorkIfNeeded();
+              },
+              child: const Text("Dodaj Prace Domową"),
+            ),
+          ),
+          _pagesHomeWorkList(state),
           BlocProvider(
             create: (context) => LessonPlanCubit(),
             child: BlocBuilder<LessonPlanCubit, LessonPlanState>(builder: (
@@ -117,10 +119,11 @@ class _Pages extends StatelessWidget {
             ) {
               if (state is LessonPlan) {
                 return LessonPlanAndChangePlanLayout(
-                    currentDayPlan: state.currentDayPlan,
-                    cardColorList: state.cardColorList,
-                    gestureDetectorIndex: state.gestureDetectorIndex,
-                    lessonPlanOrChangePlan: state.lessonPlanOrChangePlan);
+                  currentDayPlan: state.currentDayPlan,
+                  cardColorList: state.cardColorList,
+                  whichDayIsActive: state.whichDayIsActive,
+                  lessonPlanOrChangePlan: state.lessonPlanOrChangePlan,
+                );
               } else {
                 return const CircularProgressIndicator();
               }
@@ -150,8 +153,9 @@ class HomeWorkListLayout extends StatelessWidget {
               height: 60,
               width: 50,
               decoration: const BoxDecoration(
-                  color: Colors.black26,
-                  borderRadius: BorderRadius.all(Radius.circular(10))),
+                color: Colors.black26,
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+              ),
               child: Column(
                 children: [
                   const SizedBox(
@@ -174,7 +178,7 @@ class LessonPlanAndChangePlanLayout extends StatelessWidget {
   LessonPlanAndChangePlanLayout(
       {required this.currentDayPlan,
       required this.cardColorList,
-      required this.gestureDetectorIndex,
+      required this.whichDayIsActive,
       required this.lessonPlanOrChangePlan,
       Key? key})
       : super(key: key);
@@ -199,7 +203,8 @@ class LessonPlanAndChangePlanLayout extends StatelessWidget {
   final bool lessonPlanOrChangePlan;
   final List<String> currentDayPlan;
   final List<List<Color>> cardColorList;
-  final int gestureDetectorIndex;
+  final int whichDayIsActive;
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -259,80 +264,20 @@ class LessonPlanAndChangePlanLayout extends StatelessWidget {
               color: Colors.purple, boxShadow: [BoxShadow(blurRadius: 10.0)]),
           child: ListView.builder(
               itemBuilder: (BuildContext context, int index) {
-                if ((lessonPlanOrChangePlan == false) &&
-                    (gestureDetectorIndex != 5)) {
-                  return Container(
-                    margin: const EdgeInsets.only(left: 5, right: 5, top: 5),
-                    height: 60,
-                    width: 50,
-                    decoration: const BoxDecoration(
-                        color: Colors.black26,
-                        borderRadius: BorderRadius.all(Radius.circular(10))),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 16),
-                      child: TextFormField(
-                        style: const TextStyle(fontSize: 20, color: Colors.red),
-                        decoration: InputDecoration(
-                          border: const UnderlineInputBorder(),
-                          hintText: '${index + 1} Lekcja',
-                        ),
-                      ),
-                    ),
-                  );
-                  //todo zmienić  on pres przycisku  wzależnosci od gestureDetectorIndex będzie zapisywał do różnych list w shared preferences;
-                } else if ((lessonPlanOrChangePlan == false) &&
-                    (gestureDetectorIndex == 5)) {
-                  return Container(
-                    margin: const EdgeInsets.only(left: 5, right: 5, top: 5),
-                    height: 60,
-                    width: 50,
-                    decoration: const BoxDecoration(
-                        color: Colors.black26,
-                        borderRadius: BorderRadius.all(Radius.circular(10))),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 0),
-                      child: TextFormField(
-                        controller: _controller[index],
-                        onEditingComplete: () {
-                          print(_controller[index].text);
-                        },
-                        style: const TextStyle(fontSize: 20, color: Colors.red),
-                        keyboardType: TextInputType.number,
-                        textAlignVertical: TextAlignVertical.bottom,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.allow(RegExp('[0-9.-]'))
-                        ],
-                        decoration: const InputDecoration(
-                          border: UnderlineInputBorder(),
-                          hintText: 'gg.mm-gg.mm',
-                        ),
-                      ),
-                    ),
-                  );
-                } else {
-                  return Container(
-                    margin: const EdgeInsets.only(left: 5, right: 5, top: 5),
-                    height: 60,
-                    width: 50,
-                    decoration: const BoxDecoration(
-                        color: Colors.black26,
-                        borderRadius: BorderRadius.all(Radius.circular(10))),
-                    child: Column(
-                      children: [
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Text(
-                          currentDayPlan.elementAt(index),
-                          style:
-                              const TextStyle(fontSize: 30, color: Colors.red),
-                        ),
-                      ],
-                    ),
-                  );
-                }
+                return Container(
+                  margin: const EdgeInsets.only(left: 5, right: 5, top: 5),
+                  height: 60,
+                  width: 50,
+                  decoration: const BoxDecoration(
+                      color: Colors.black26,
+                      borderRadius: BorderRadius.all(Radius.circular(10))),
+                  child: _lessonPlanOrLessonHoursShowOrchange(
+                      lessonPlanOrChangePlan,
+                      whichDayIsActive,
+                      index,
+                      _controller,
+                      currentDayPlan),
+                );
               },
               itemCount: currentDayPlan.length),
         ),
@@ -343,17 +288,16 @@ class LessonPlanAndChangePlanLayout extends StatelessWidget {
             style: ElevatedButton.styleFrom(
                 fixedSize: const Size(240, 50), primary: Colors.black26),
             onPressed: () {
-              if (lessonPlanOrChangePlan == true) {
-                context
-                    .read<LessonPlanCubit>()
-                    .changePlanLayout(gestureDetectorIndex, false);
-                print(gestureDetectorIndex);
-              } else {
-                context
-                    .read<LessonPlanCubit>()
-                    .changePlanLayout(gestureDetectorIndex, true);
-                print(gestureDetectorIndex);
-              }
+              bool activateOrDeactivateDaysAndHoursGestureDetector =
+                  _activateOrDeactivateDaysAndHoursGestureDetector(
+                lessonPlanOrChangePlan,
+                _controller,
+              );
+              context.read<LessonPlanCubit>().changePlanLayout(
+                    whichDayIsActive,
+                    activateOrDeactivateDaysAndHoursGestureDetector,
+                  );
+              print(whichDayIsActive);
             },
             child: LessonPlanOrChangePlanButton(
                 lessonPlanOrChangePlan: lessonPlanOrChangePlan)),
@@ -382,4 +326,86 @@ class LessonPlanOrChangePlanButton extends StatelessWidget {
       );
     }
   }
+}
+
+Widget _pagesHomeWorkList(state) {
+  if (state is HomeworkLoaded)
+    return HomeWorkListLayout(homeWorks: state.homeWorks);
+  else
+    return const CircularProgressIndicator();
+}
+
+Widget _lessonPlanOrLessonHoursShowOrchange(
+  bool lessonPlanOrChangePlan,
+  int whichDayIsActive,
+  int index,
+  List<TextEditingController> _controller,
+  List<String> currentDayPlan,
+) {
+  if ((lessonPlanOrChangePlan == false) && (whichDayIsActive != 5)) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+      child: TextFormField(
+        controller: _controller[index],
+        style: const TextStyle(fontSize: 20, color: Colors.red),
+        decoration: InputDecoration(
+          border: const UnderlineInputBorder(),
+          hintText: '${index + 1} Lekcja',
+        ),
+      ),
+    );
+    //todo zmienić  on pres przycisku  wzależnosci od whichDayIsActive będzie zapisywał do różnych list w shared preferences;
+  } else if ((lessonPlanOrChangePlan == false) && (whichDayIsActive == 5)) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+      child: TextFormField(
+        controller: _controller[index],
+        onEditingComplete: () {
+          print(_controller[index].text);
+        },
+        style: const TextStyle(fontSize: 20, color: Colors.red),
+        keyboardType: TextInputType.number,
+        textAlignVertical: TextAlignVertical.bottom,
+        inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9.-]'))],
+        decoration: const InputDecoration(
+          border: UnderlineInputBorder(),
+          hintText: 'gg.mm-gg.mm',
+        ),
+      ),
+    );
+  } else {
+    return Column(
+      children: [
+        const SizedBox(
+          height: 10,
+        ),
+        Text(
+          currentDayPlan.elementAt(index),
+          style: const TextStyle(fontSize: 30, color: Colors.red),
+        ),
+      ],
+    );
+  }
+}
+
+bool _activateOrDeactivateDaysAndHoursGestureDetector(
+    lessonPlanOrChangePlan, List<TextEditingController> _controller) {
+  if (lessonPlanOrChangePlan == true) {
+    return false;
+  } else {
+    List<String> newPlan = [];
+    for (int i = 0; i <= 7; i++) {
+      newPlan.add(_controller[i].text);
+      _setNewPlan(newPlan);
+    }
+    print(newPlan);
+    return true;
+  }
+}
+
+//todo do _activateOrDeactivateDaysAndHoursGestureDetector dodać jeszcze whichDayIsActive
+//todo potem wysłaćdo _setNewPlan tam zrobić liste z nazwami kluczy w zależności od dnia
+Future<void> _setNewPlan(List<String> newPlan) async {
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setStringList("monday", newPlan);
 }

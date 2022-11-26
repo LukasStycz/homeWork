@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 part 'lessonplan_state.dart';
 
@@ -8,9 +9,20 @@ class LessonPlanCubit extends Cubit<LessonPlanState> {
     _loadHours(true);
   }
 
-  void _loadMonday(bool lessonPlanOrChangePlan) {
-    const int gestureDetectorIndex = 0;
-    final List<String> currentDayPlan = ["cos", "poniedziałek"];
+  Future<void> _loadMonday(bool lessonPlanOrChangePlan) async {
+    const int whichDayIsActive = 0;
+    final prefs = await SharedPreferences.getInstance();
+    final List<String> currentDayPlan = prefs.getStringList('monday') ??
+        [
+          'a',
+          'b',
+          'c',
+          'd',
+          'e',
+          'f',
+          'g',
+          'h',
+        ];
     final List<List<Color>> cardColorList = [
       [Colors.white, Colors.black],
       [Colors.black26, Colors.white],
@@ -19,12 +31,12 @@ class LessonPlanCubit extends Cubit<LessonPlanState> {
       [Colors.black26, Colors.white],
       [Colors.black26, Colors.white],
     ];
-    emit(LessonPlan(cardColorList, currentDayPlan, gestureDetectorIndex,
+    emit(LessonPlan(cardColorList, currentDayPlan, whichDayIsActive,
         lessonPlanOrChangePlan));
   }
 
   void _loadTuesday(bool lessonPlanOrChangePlan) {
-    const int gestureDetectorIndex = 1;
+    const int whichDayIsActive = 1;
     final List<String> currentDayPlan = ["cos", "wtorek"];
     final List<List<Color>> cardColorList = [
       [Colors.black26, Colors.white],
@@ -34,12 +46,12 @@ class LessonPlanCubit extends Cubit<LessonPlanState> {
       [Colors.black26, Colors.white],
       [Colors.black26, Colors.white],
     ];
-    emit(LessonPlan(cardColorList, currentDayPlan, gestureDetectorIndex,
+    emit(LessonPlan(cardColorList, currentDayPlan, whichDayIsActive,
         lessonPlanOrChangePlan));
   }
 
   void _loadWendesday(bool lessonPlanOrChangePlan) {
-    const int gestureDetectorIndex = 2;
+    const int whichDayIsActive = 2;
 
     final List<String> currentDayPlan = ["cos", "środa"];
     final List<List<Color>> cardColorList = [
@@ -50,12 +62,12 @@ class LessonPlanCubit extends Cubit<LessonPlanState> {
       [Colors.black26, Colors.white],
       [Colors.black26, Colors.white],
     ];
-    emit(LessonPlan(cardColorList, currentDayPlan, gestureDetectorIndex,
+    emit(LessonPlan(cardColorList, currentDayPlan, whichDayIsActive,
         lessonPlanOrChangePlan));
   }
 
   void _loadThursday(bool lessonPlanOrChangePlan) {
-    const int gestureDetectorIndex = 3;
+    const int whichDayIsActive = 3;
 
     final List<String> currentDayPlan = ["cos", "czwartek"];
     final List<List<Color>> cardColorList = [
@@ -66,12 +78,12 @@ class LessonPlanCubit extends Cubit<LessonPlanState> {
       [Colors.black26, Colors.white],
       [Colors.black26, Colors.white],
     ];
-    emit(LessonPlan(cardColorList, currentDayPlan, gestureDetectorIndex,
+    emit(LessonPlan(cardColorList, currentDayPlan, whichDayIsActive,
         lessonPlanOrChangePlan));
   }
 
   void _loadFriday(bool lessonPlanOrChangePlan) {
-    const int gestureDetectorIndex = 4;
+    const int whichDayIsActive = 4;
 
     final List<String> currentDayPlan = ["cos", "piątek"];
     final List<List<Color>> cardColorList = [
@@ -82,12 +94,12 @@ class LessonPlanCubit extends Cubit<LessonPlanState> {
       [Colors.white, Colors.black],
       [Colors.black26, Colors.white],
     ];
-    emit(LessonPlan(cardColorList, currentDayPlan, gestureDetectorIndex,
+    emit(LessonPlan(cardColorList, currentDayPlan, whichDayIsActive,
         lessonPlanOrChangePlan));
   }
 
   void _loadHours(bool lessonPlanOrChangePlan) {
-    const int gestureDetectorIndex = 5;
+    const int whichDayIsActive = 5;
 
     const List<double> lessonHours = [
       8.00,
@@ -114,7 +126,7 @@ class LessonPlanCubit extends Cubit<LessonPlanState> {
       '${lessonHours[6].toStringAsFixed(2)}-${lessonHours[7].toStringAsFixed(2)}',
       '${lessonHours[8].toStringAsFixed(2)}-${lessonHours[9].toStringAsFixed(2)}',
       '${lessonHours[10].toStringAsFixed(2)}-${lessonHours[11].toStringAsFixed(2)}',
-      '${lessonHours[12].toStringAsFixed(2)}.${lessonHours[13].toStringAsFixed(2)}',
+      '${lessonHours[12].toStringAsFixed(2)}-${lessonHours[13].toStringAsFixed(2)}',
       '${lessonHours[14].toStringAsFixed(2)}-${lessonHours[15].toStringAsFixed(2)}',
     ];
     final List<List<Color>> cardColorList = [
@@ -125,7 +137,7 @@ class LessonPlanCubit extends Cubit<LessonPlanState> {
       [Colors.black26, Colors.white],
       [Colors.white, Colors.black],
     ];
-    emit(LessonPlan(cardColorList, currentDayPlan, gestureDetectorIndex,
+    emit(LessonPlan(cardColorList, currentDayPlan, whichDayIsActive,
         lessonPlanOrChangePlan));
   }
 
