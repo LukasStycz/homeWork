@@ -292,6 +292,7 @@ class LessonPlanAndChangePlanLayout extends StatelessWidget {
                   _activateOrDeactivateDaysAndHoursGestureDetector(
                 lessonPlanOrChangePlan,
                 _controller,
+                      whichDayIsActive,
               );
               context.read<LessonPlanCubit>().changePlanLayout(
                     whichDayIsActive,
@@ -389,23 +390,20 @@ Widget _lessonPlanOrLessonHoursShowOrchange(
 }
 
 bool _activateOrDeactivateDaysAndHoursGestureDetector(
-    lessonPlanOrChangePlan, List<TextEditingController> _controller) {
+    lessonPlanOrChangePlan, List<TextEditingController> _controller, int whichDayIsActive,) {
   if (lessonPlanOrChangePlan == true) {
     return false;
   } else {
     List<String> newPlan = [];
     for (int i = 0; i <= 7; i++) {
       newPlan.add(_controller[i].text);
-      _setNewPlan(newPlan);
+      _setNewPlan(newPlan,whichDayIsActive,);
     }
     print(newPlan);
     return true;
   }
 }
-
-//todo do _activateOrDeactivateDaysAndHoursGestureDetector dodać jeszcze whichDayIsActive
-//todo potem wysłaćdo _setNewPlan tam zrobić liste z nazwami kluczy w zależności od dnia
-Future<void> _setNewPlan(List<String> newPlan) async {
+Future<void> _setNewPlan(List<String> newPlan,int whichDayIsActive,) async {
   final prefs = await SharedPreferences.getInstance();
-  await prefs.setStringList("monday", newPlan);
+  await prefs.setStringList(lessonPlanKeysInSharedpreferences[whichDayIsActive], newPlan);
 }

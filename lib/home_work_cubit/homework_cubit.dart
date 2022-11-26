@@ -77,12 +77,12 @@ class HomeworkCubit extends Cubit<HomeworkState> {
     }
     return lesson;
   }
-
+//todo zmienić tą funkcje z list subject na listy sharedpreferences
   String _getHomeWorkName(int dayNow, int lesson) {
     final String name;
     if (dayNow == DateTime.monday) {
       name = monday[lesson - 1].title;
-    } else if (dayNow == DateTime.saturday) {
+    } else if (dayNow == DateTime.tuesday) {
       name = tuesday[lesson - 1].title;
     } else if (dayNow == DateTime.wednesday) {
       name = wednesday[lesson - 1].title;

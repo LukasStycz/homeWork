@@ -12,17 +12,9 @@ class LessonPlanCubit extends Cubit<LessonPlanState> {
   Future<void> _loadMonday(bool lessonPlanOrChangePlan) async {
     const int whichDayIsActive = 0;
     final prefs = await SharedPreferences.getInstance();
-    final List<String> currentDayPlan = prefs.getStringList('monday') ??
-        [
-          'a',
-          'b',
-          'c',
-          'd',
-          'e',
-          'f',
-          'g',
-          'h',
-        ];
+    final List<String> currentDayPlan = prefs.getStringList(
+            lessonPlanKeysInSharedpreferences[whichDayIsActive]) ??
+        defaultLessonPlan;
     final List<List<Color>> cardColorList = [
       [Colors.white, Colors.black],
       [Colors.black26, Colors.white],
@@ -35,9 +27,12 @@ class LessonPlanCubit extends Cubit<LessonPlanState> {
         lessonPlanOrChangePlan));
   }
 
-  void _loadTuesday(bool lessonPlanOrChangePlan) {
+  Future<void> _loadTuesday(bool lessonPlanOrChangePlan) async {
     const int whichDayIsActive = 1;
-    final List<String> currentDayPlan = ["cos", "wtorek"];
+    final prefs = await SharedPreferences.getInstance();
+    final List<String> currentDayPlan = prefs.getStringList(
+            lessonPlanKeysInSharedpreferences[whichDayIsActive]) ??
+        defaultLessonPlan;
     final List<List<Color>> cardColorList = [
       [Colors.black26, Colors.white],
       [Colors.white, Colors.black],
@@ -50,10 +45,13 @@ class LessonPlanCubit extends Cubit<LessonPlanState> {
         lessonPlanOrChangePlan));
   }
 
-  void _loadWendesday(bool lessonPlanOrChangePlan) {
+  Future<void> _loadWendesday(bool lessonPlanOrChangePlan) async {
     const int whichDayIsActive = 2;
 
-    final List<String> currentDayPlan = ["cos", "środa"];
+    final prefs = await SharedPreferences.getInstance();
+    final List<String> currentDayPlan = prefs.getStringList(
+            lessonPlanKeysInSharedpreferences[whichDayIsActive]) ??
+        defaultLessonPlan;
     final List<List<Color>> cardColorList = [
       [Colors.black26, Colors.white],
       [Colors.black26, Colors.white],
@@ -66,10 +64,13 @@ class LessonPlanCubit extends Cubit<LessonPlanState> {
         lessonPlanOrChangePlan));
   }
 
-  void _loadThursday(bool lessonPlanOrChangePlan) {
+  Future<void> _loadThursday(bool lessonPlanOrChangePlan) async {
     const int whichDayIsActive = 3;
 
-    final List<String> currentDayPlan = ["cos", "czwartek"];
+    final prefs = await SharedPreferences.getInstance();
+    final List<String> currentDayPlan = prefs.getStringList(
+            lessonPlanKeysInSharedpreferences[whichDayIsActive]) ??
+        defaultLessonPlan;
     final List<List<Color>> cardColorList = [
       [Colors.black26, Colors.white],
       [Colors.black26, Colors.white],
@@ -82,10 +83,13 @@ class LessonPlanCubit extends Cubit<LessonPlanState> {
         lessonPlanOrChangePlan));
   }
 
-  void _loadFriday(bool lessonPlanOrChangePlan) {
+  Future<void> _loadFriday(bool lessonPlanOrChangePlan) async {
     const int whichDayIsActive = 4;
 
-    final List<String> currentDayPlan = ["cos", "piątek"];
+    final prefs = await SharedPreferences.getInstance();
+    final List<String> currentDayPlan = prefs.getStringList(
+            lessonPlanKeysInSharedpreferences[whichDayIsActive]) ??
+        defaultLessonPlan;
     final List<List<Color>> cardColorList = [
       [Colors.black26, Colors.white],
       [Colors.black26, Colors.white],
@@ -163,3 +167,22 @@ class LessonPlanCubit extends Cubit<LessonPlanState> {
     }
   }
 }
+
+const List<String> lessonPlanKeysInSharedpreferences = [
+  'monday',
+  'tuesday',
+  'wednesday',
+  'thursday',
+  'friday',
+  'hours',
+];
+const List<String> defaultLessonPlan = [
+  'a',
+  'b',
+  'c',
+  'd',
+  'e',
+  'f',
+  'g',
+  'h',
+];
