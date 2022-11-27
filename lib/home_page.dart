@@ -292,7 +292,7 @@ class LessonPlanAndChangePlanLayout extends StatelessWidget {
                   _activateOrDeactivateDaysAndHoursGestureDetector(
                 lessonPlanOrChangePlan,
                 _controller,
-                      whichDayIsActive,
+                whichDayIsActive,
               );
               context.read<LessonPlanCubit>().changePlanLayout(
                     whichDayIsActive,
@@ -330,24 +330,25 @@ class LessonPlanOrChangePlanButton extends StatelessWidget {
 }
 
 Widget _pagesHomeWorkList(state) {
-  if (state is HomeworkLoaded)
+  if (state is HomeworkLoaded) {
     return HomeWorkListLayout(homeWorks: state.homeWorks);
-  else
+  } else {
     return const CircularProgressIndicator();
+  }
 }
 
 Widget _lessonPlanOrLessonHoursShowOrchange(
   bool lessonPlanOrChangePlan,
   int whichDayIsActive,
   int index,
-  List<TextEditingController> _controller,
+  List<TextEditingController> controller,
   List<String> currentDayPlan,
 ) {
   if ((lessonPlanOrChangePlan == false) && (whichDayIsActive != 5)) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
       child: TextFormField(
-        controller: _controller[index],
+        controller: controller[index],
         style: const TextStyle(fontSize: 20, color: Colors.red),
         decoration: InputDecoration(
           border: const UnderlineInputBorder(),
@@ -355,14 +356,13 @@ Widget _lessonPlanOrLessonHoursShowOrchange(
         ),
       ),
     );
-    //todo zmienić  on pres przycisku  wzależnosci od whichDayIsActive będzie zapisywał do różnych list w shared preferences;
   } else if ((lessonPlanOrChangePlan == false) && (whichDayIsActive == 5)) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
       child: TextFormField(
-        controller: _controller[index],
+        controller: controller[index],
         onEditingComplete: () {
-          print(_controller[index].text);
+          print(controller[index].text);
         },
         style: const TextStyle(fontSize: 20, color: Colors.red),
         keyboardType: TextInputType.number,
@@ -390,20 +390,31 @@ Widget _lessonPlanOrLessonHoursShowOrchange(
 }
 
 bool _activateOrDeactivateDaysAndHoursGestureDetector(
-    lessonPlanOrChangePlan, List<TextEditingController> _controller, int whichDayIsActive,) {
+  lessonPlanOrChangePlan,
+  List<TextEditingController> controller,
+  int whichDayIsActive,
+) {
   if (lessonPlanOrChangePlan == true) {
     return false;
   } else {
     List<String> newPlan = [];
     for (int i = 0; i <= 7; i++) {
-      newPlan.add(_controller[i].text);
-      _setNewPlan(newPlan,whichDayIsActive,);
+      newPlan.add(controller[i].text);
+      _setNewPlan(
+        newPlan,
+        whichDayIsActive,
+      );
     }
     print(newPlan);
     return true;
   }
 }
-Future<void> _setNewPlan(List<String> newPlan,int whichDayIsActive,) async {
+
+Future<void> _setNewPlan(
+  List<String> newPlan,
+  int whichDayIsActive,
+) async {
   final prefs = await SharedPreferences.getInstance();
-  await prefs.setStringList(lessonPlanKeysInSharedpreferences[whichDayIsActive], newPlan);
+  await prefs.setStringList(
+      lessonPlanKeysInSharedpreferences[whichDayIsActive], newPlan);
 }

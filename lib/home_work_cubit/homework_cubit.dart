@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:homeworkapp/lesson_plan-cubit/lessonplan_cubit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:homeworkapp/subject.dart';
 part 'homework_state.dart';
 
 class HomeworkCubit extends Cubit<HomeworkState> {
@@ -30,16 +30,18 @@ class HomeworkCubit extends Cubit<HomeworkState> {
       timeNow.hour,
       timeNow.minute,
     );
-    if (lessonNumber != noSuchLesson) {
-      final homeWorkName = _getHomeWorkName(timeNow.weekday, lessonNumber);
+    if ((lessonNumber != noSuchLesson) && (timeNow.weekday <= 5)) {
       final prefs = await SharedPreferences.getInstance();
+      final List<String> lessonPlanFor_getHomeWorkName = prefs.getStringList(
+              lessonPlanKeysInSharedpreferences[timeNow.weekday - 1]) ??
+          defaultLessonPlan;
+      final homeWorkName = lessonPlanFor_getHomeWorkName[lessonNumber - 1];
       final List<String> homeWorkList = prefs.getStringList(homeWorkKey) ?? [];
       await prefs.setInt(dayOfListUpdateKey, timeNow.weekday);
       _checkAndAddToListIfNeeded(homeWorkName, homeWorkList);
       await prefs.setStringList(homeWorkKey, homeWorkList);
       emit(HomeworkLoaded(homeWorkList));
       print(homeWorkList);
-
     }
   }
 
@@ -73,36 +75,18 @@ class HomeworkCubit extends Cubit<HomeworkState> {
         ((hour == 15) && (minute >= 0) && (minute <= 30))) {
       lesson = 8;
     } else {
-      lesson = 2;
+      lesson = noSuchLesson;
     }
     return lesson;
   }
-//todo zmienić tą funkcje z list subject na listy sharedpreferences
-  String _getHomeWorkName(int dayNow, int lesson) {
-    final String name;
-    if (dayNow == DateTime.monday) {
-      name = monday[lesson - 1].title;
-    } else if (dayNow == DateTime.tuesday) {
-      name = tuesday[lesson - 1].title;
-    } else if (dayNow == DateTime.wednesday) {
-      name = wednesday[lesson - 1].title;
-    } else if (dayNow == DateTime.thursday) {
-      name = thursday[lesson - 1].title;
-    } else if (dayNow == DateTime.friday) {
-      name = friday[lesson - 1].title;
-    } else {
-      name = 'none';
+  void _checkAndAddToListIfNeeded(String lessonName, List homeWorkList) {
+    if (((homeWorkList.isEmpty) || (lessonName != homeWorkList.last)) &&
+        (lessonName != 'none')) {
+      homeWorkList.add(lessonName);
     }
-    return name;
   }
 }
 
-void _checkAndAddToListIfNeeded(String lessonName, List homeWorkList) {
-  if (((homeWorkList.isEmpty) || (lessonName != homeWorkList.last)) &&
-      (lessonName != 'none')) {
-    homeWorkList.add(lessonName);
-  }
-}
-const int noSuchLesson=500;
+const int noSuchLesson = 500;
 const String homeWorkKey = "HOME_WORK";
 const String dayOfListUpdateKey = "DAY_OF_LIST_UPDATE";
