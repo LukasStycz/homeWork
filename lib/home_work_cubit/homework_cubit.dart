@@ -12,9 +12,16 @@ class HomeworkCubit extends Cubit<HomeworkState> {
     final timeNow = DateTime.now();
     final prefs = await SharedPreferences.getInstance();
     final int dayOfListUpdate = prefs.getInt(dayOfListUpdateKey) ?? 0;
+    /// nie wiem co ta zmienna oznacza, poszukałbym lepszej nazwy
+
     if (dayOfListUpdate != timeNow.weekday) {
       await prefs.remove(homeWorkKey);
       final List<String> homeWorks = prefs.getStringList(homeWorkKey) ?? [];
+
+      /// skoro linię wyżej usunąłeś ten klucz, to przecież homeWorks zawsze zwróci puste, po co odczytywać wtedy z prefsów?
+      /// po prostu w emit daj pustą listę :       emit(HomeworkLoaded(List.empty()));
+      /// moglbys tez ogolnie uproscic nieco tego ifa, robiac poza nim wszystko co wspolne,bo niektore rzeczzy sie powtarzaja
+
       emit(HomeworkLoaded(homeWorks));
       print("dzieje sie że lista się czyści");
     } else {
@@ -30,13 +37,19 @@ class HomeworkCubit extends Cubit<HomeworkState> {
       timeNow.hour,
       timeNow.minute,
     );
+    /// cyfra 5 nic nie mówi, mógłbyś zorbić na nia consta friday, ale w tym przypadku nie ma potrzeby
+    /// bo DateTime nam to daje, podmieńz     DateTime.friday - jak w niego wejdziesz to zobaczysz,że to int o wartości 5
+
     if ((lessonNumber != noSuchLesson) && (timeNow.weekday <= 5)) {
       final prefs = await SharedPreferences.getInstance();
+
+      /// mega dziwna nazwa zmiennej, do tego nie stosuj _, np. currentDayLessonPlan
       final List<String> lessonPlanFor_getHomeWorkName = prefs.getStringList(
-              lessonPlanKeysInSharedpreferences[timeNow.weekday - 1]) ??
-          defaultLessonPlan;
+          lessonPlanKeysInSharedpreferences[timeNow.weekday - 1]) ?? defaultLessonPlan;
       final homeWorkName = lessonPlanFor_getHomeWorkName[lessonNumber - 1];
       final List<String> homeWorkList = prefs.getStringList(homeWorkKey) ?? [];
+
+      /// szczerze mowiac nie rozumiem co tu robisz, zapisujesz obecny dzien w prefsach, po co?
       await prefs.setInt(dayOfListUpdateKey, timeNow.weekday);
       _checkAndAddToListIfNeeded(homeWorkName, homeWorkList);
       await prefs.setStringList(homeWorkKey, homeWorkList);
@@ -46,9 +59,9 @@ class HomeworkCubit extends Cubit<HomeworkState> {
   }
 
   int _getLessonNumber(
-    int hour,
-    int minute,
-  ) {
+      int hour,
+      int minute,
+      ) {
     final int lesson;
 
     if (((hour == 8) && (minute >= 0) && (minute <= 55))) {

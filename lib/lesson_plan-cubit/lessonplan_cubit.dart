@@ -9,11 +9,12 @@ class LessonPlanCubit extends Cubit<LessonPlanState> {
     _loadHours(true);
   }
 
+  /// Wszystkie funkcje ponizej robią dokładnie to samo, róznią się jedynie cyfrą i kolorami, mozesz to zredykować do jednej funkcji z 3 parametrami
   Future<void> _loadMonday(bool lessonPlanOrChangePlan) async {
     const int whichDayIsActive = 0;
     final prefs = await SharedPreferences.getInstance();
     final List<String> currentDayPlan = prefs.getStringList(
-            lessonPlanKeysInSharedpreferences[whichDayIsActive]) ??
+        lessonPlanKeysInSharedpreferences[whichDayIsActive]) ??
         defaultLessonPlan;
     final List<List<Color>> cardColorList = [
       [Colors.white, Colors.black],
@@ -31,7 +32,7 @@ class LessonPlanCubit extends Cubit<LessonPlanState> {
     const int whichDayIsActive = 1;
     final prefs = await SharedPreferences.getInstance();
     final List<String> currentDayPlan = prefs.getStringList(
-            lessonPlanKeysInSharedpreferences[whichDayIsActive]) ??
+        lessonPlanKeysInSharedpreferences[whichDayIsActive]) ??
         defaultLessonPlan;
     final List<List<Color>> cardColorList = [
       [Colors.black26, Colors.white],
@@ -50,7 +51,7 @@ class LessonPlanCubit extends Cubit<LessonPlanState> {
 
     final prefs = await SharedPreferences.getInstance();
     final List<String> currentDayPlan = prefs.getStringList(
-            lessonPlanKeysInSharedpreferences[whichDayIsActive]) ??
+        lessonPlanKeysInSharedpreferences[whichDayIsActive]) ??
         defaultLessonPlan;
     final List<List<Color>> cardColorList = [
       [Colors.black26, Colors.white],
@@ -69,7 +70,7 @@ class LessonPlanCubit extends Cubit<LessonPlanState> {
 
     final prefs = await SharedPreferences.getInstance();
     final List<String> currentDayPlan = prefs.getStringList(
-            lessonPlanKeysInSharedpreferences[whichDayIsActive]) ??
+        lessonPlanKeysInSharedpreferences[whichDayIsActive]) ??
         defaultLessonPlan;
     final List<List<Color>> cardColorList = [
       [Colors.black26, Colors.white],
@@ -88,7 +89,7 @@ class LessonPlanCubit extends Cubit<LessonPlanState> {
 
     final prefs = await SharedPreferences.getInstance();
     final List<String> currentDayPlan = prefs.getStringList(
-            lessonPlanKeysInSharedpreferences[whichDayIsActive]) ??
+        lessonPlanKeysInSharedpreferences[whichDayIsActive]) ??
         defaultLessonPlan;
     final List<List<Color>> cardColorList = [
       [Colors.black26, Colors.white],
@@ -124,6 +125,7 @@ class LessonPlanCubit extends Cubit<LessonPlanState> {
       15.20
     ];
     final List<String> currentDayPlan = [
+      /// to stringAsFixed jak bedzie zły string, rzuci wyjątkiem, takie coś musiałbyś zrobić w try {} catch{}
       '${lessonHours[0].toStringAsFixed(2)}-${lessonHours[1].toStringAsFixed(2)}',
       '${lessonHours[2].toStringAsFixed(2)}-${lessonHours[3].toStringAsFixed(2)}',
       '${lessonHours[4].toStringAsFixed(2)}-${lessonHours[5].toStringAsFixed(2)}',
@@ -146,6 +148,7 @@ class LessonPlanCubit extends Cubit<LessonPlanState> {
   }
 
   void changePlanLayout(int index, bool lessonPlanOrChangePlan) {
+    /// mozna to zdecydowanie uprościć edytujac kazda funkcje ladujaca dzien tygodnia
     if (index == 1) {
       _loadTuesday(lessonPlanOrChangePlan);
       print('dzień$index');
@@ -168,6 +171,7 @@ class LessonPlanCubit extends Cubit<LessonPlanState> {
   }
 }
 
+/// może warto  byłoby trzymać klucze, których używasz w kilku miejsach w osobnym pliku?
 const List<String> lessonPlanKeysInSharedpreferences = [
   'monday',
   'tuesday',

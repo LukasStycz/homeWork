@@ -83,6 +83,8 @@ class _LessonPlanTab extends StatelessWidget {
   }
 }
 
+/// do kolorów warto byloby zrobić osobny plik np. colors.dart
+/// osobny również do róznych sizeów np. dimens.dart
 const Color _tabBarPrimaryColor = Colors.indigoAccent;
 const double _tabBarIconSize = 50.0;
 const Color _tabBarSecondaryColor = Colors.white;
@@ -93,9 +95,9 @@ class _Pages extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<HomeworkCubit, HomeworkState>(builder: (
-      BuildContext context,
-      HomeworkState state,
-    ) {
+        BuildContext context,
+        HomeworkState state,
+        ) {
       return TabBarView(
         children: [
           Scaffold(
@@ -111,12 +113,13 @@ class _Pages extends StatelessWidget {
             ),
           ),
           _pagesHomeWorkList(state),
+          /// ten blok provider moglby byc wydzielony do jakiejs funkcji, latwiej by sie czytało
           BlocProvider(
             create: (context) => LessonPlanCubit(),
             child: BlocBuilder<LessonPlanCubit, LessonPlanState>(builder: (
-              BuildContext context,
-              LessonPlanState state,
-            ) {
+                BuildContext context,
+                LessonPlanState state,
+                ) {
               if (state is LessonPlan) {
                 return LessonPlanAndChangePlanLayout(
                   currentDayPlan: state.currentDayPlan,
@@ -174,13 +177,14 @@ class HomeWorkListLayout extends StatelessWidget {
   }
 }
 
+/// dziwna nazwa trochę, Może po prostu LessonPlanPage?
 class LessonPlanAndChangePlanLayout extends StatelessWidget {
   LessonPlanAndChangePlanLayout(
       {required this.currentDayPlan,
-      required this.cardColorList,
-      required this.whichDayIsActive,
-      required this.lessonPlanOrChangePlan,
-      Key? key})
+        required this.cardColorList,
+        required this.whichDayIsActive,
+        required this.lessonPlanOrChangePlan,
+        Key? key})
       : super(key: key);
   final List<String> lessonPlanDaysAndHours = [
     "Pon",
@@ -234,7 +238,7 @@ class LessonPlanAndChangePlanLayout extends StatelessWidget {
                   decoration: BoxDecoration(
                       color: cardColorList[index][0],
                       borderRadius:
-                          const BorderRadius.all(Radius.circular(10))),
+                      const BorderRadius.all(Radius.circular(10))),
                   child: Column(
                     children: [
                       const SizedBox(
@@ -289,15 +293,15 @@ class LessonPlanAndChangePlanLayout extends StatelessWidget {
                 fixedSize: const Size(240, 50), primary: Colors.black26),
             onPressed: () {
               bool activateOrDeactivateDaysAndHoursGestureDetector =
-                  _activateOrDeactivateDaysAndHoursGestureDetector(
+              _activateOrDeactivateDaysAndHoursGestureDetector(
                 lessonPlanOrChangePlan,
                 _controller,
                 whichDayIsActive,
               );
               context.read<LessonPlanCubit>().changePlanLayout(
-                    whichDayIsActive,
-                    activateOrDeactivateDaysAndHoursGestureDetector,
-                  );
+                whichDayIsActive,
+                activateOrDeactivateDaysAndHoursGestureDetector,
+              );
               print(whichDayIsActive);
             },
             child: LessonPlanOrChangePlanButton(
@@ -338,12 +342,12 @@ Widget _pagesHomeWorkList(state) {
 }
 
 Widget _lessonPlanOrLessonHoursShowOrchange(
-  bool lessonPlanOrChangePlan,
-  int whichDayIsActive,
-  int index,
-  List<TextEditingController> controller,
-  List<String> currentDayPlan,
-) {
+    bool lessonPlanOrChangePlan,
+    int whichDayIsActive,
+    int index,
+    List<TextEditingController> controller,
+    List<String> currentDayPlan,
+    ) {
   if ((lessonPlanOrChangePlan == false) && (whichDayIsActive != 5)) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
@@ -389,11 +393,12 @@ Widget _lessonPlanOrLessonHoursShowOrchange(
   }
 }
 
+/// to powinna byc funkcja w cubit
 bool _activateOrDeactivateDaysAndHoursGestureDetector(
-  lessonPlanOrChangePlan,
-  List<TextEditingController> controller,
-  int whichDayIsActive,
-) {
+    lessonPlanOrChangePlan,
+    List<TextEditingController> controller,
+    int whichDayIsActive,
+    ) {
   if (lessonPlanOrChangePlan == true) {
     return false;
   } else {
@@ -410,10 +415,11 @@ bool _activateOrDeactivateDaysAndHoursGestureDetector(
   }
 }
 
+/// powinno byc w cubit
 Future<void> _setNewPlan(
-  List<String> newPlan,
-  int whichDayIsActive,
-) async {
+    List<String> newPlan,
+    int whichDayIsActive,
+    ) async {
   final prefs = await SharedPreferences.getInstance();
   await prefs.setStringList(
       lessonPlanKeysInSharedpreferences[whichDayIsActive], newPlan);
