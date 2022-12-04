@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:homeworkapp/home_work_cubit/homework_cubit.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
 import 'lesson_plan-cubit/lessonplan_cubit.dart';
 
 class HomePage extends StatelessWidget {
@@ -111,24 +108,7 @@ class _Pages extends StatelessWidget {
             ),
           ),
           _pagesHomeWorkList(state),
-          BlocProvider(
-            create: (context) => LessonPlanCubit(),
-            child: BlocBuilder<LessonPlanCubit, LessonPlanState>(builder: (
-              BuildContext context,
-              LessonPlanState state,
-            ) {
-              if (state is LessonPlan) {
-                return LessonPlanAndChangePlanLayout(
-                  currentDayPlan: state.currentDayPlan,
-                  cardColorList: state.cardColorList,
-                  whichDayIsActive: state.whichDayIsActive,
-                  lessonPlanOrChangePlan: state.lessonPlanOrChangePlan,
-                );
-              } else {
-                return const CircularProgressIndicator();
-              }
-            }),
-          ),
+          _pagesLessonPlanPage(),
         ],
       );
     });
@@ -174,8 +154,8 @@ class HomeWorkListLayout extends StatelessWidget {
   }
 }
 
-class LessonPlanAndChangePlanLayout extends StatelessWidget {
-  LessonPlanAndChangePlanLayout(
+class LessonPlanPage extends StatelessWidget {
+  LessonPlanPage(
       {required this.currentDayPlan,
       required this.cardColorList,
       required this.whichDayIsActive,
@@ -271,7 +251,7 @@ class LessonPlanAndChangePlanLayout extends StatelessWidget {
                   decoration: const BoxDecoration(
                       color: Colors.black26,
                       borderRadius: BorderRadius.all(Radius.circular(10))),
-                  child: _lessonPlanOrLessonHoursShowOrchange(
+                  child: _lessonPlanOrLessonHoursShowOrChange(
                       lessonPlanOrChangePlan,
                       whichDayIsActive,
                       index,
@@ -284,24 +264,11 @@ class LessonPlanAndChangePlanLayout extends StatelessWidget {
         const SizedBox(
           height: 75,
         ),
-        ElevatedButton(
-            style: ElevatedButton.styleFrom(
-                fixedSize: const Size(240, 50), primary: Colors.black26),
-            onPressed: () {
-              bool activateOrDeactivateDaysAndHoursGestureDetector =
-                  _activateOrDeactivateDaysAndHoursGestureDetector(
-                lessonPlanOrChangePlan,
-                _controller,
-                whichDayIsActive,
-              );
-              context.read<LessonPlanCubit>().changePlanLayout(
-                    whichDayIsActive,
-                    activateOrDeactivateDaysAndHoursGestureDetector,
-                  );
-              print(whichDayIsActive);
-            },
-            child: LessonPlanOrChangePlanButton(
-                lessonPlanOrChangePlan: lessonPlanOrChangePlan)),
+        _changingPlanButton(
+             lessonPlanOrChangePlan,
+            _controller,
+             whichDayIsActive,
+             context,)
       ],
     );
   }
@@ -337,7 +304,28 @@ Widget _pagesHomeWorkList(state) {
   }
 }
 
-Widget _lessonPlanOrLessonHoursShowOrchange(
+Widget _pagesLessonPlanPage() {
+  return BlocProvider(
+    create: (context) => LessonPlanCubit(),
+    child: BlocBuilder<LessonPlanCubit, LessonPlanState>(builder: (
+      BuildContext context,
+      LessonPlanState state,
+    ) {
+      if (state is LessonPlan) {
+        return LessonPlanPage(
+          currentDayPlan: state.currentDayPlan,
+          cardColorList: state.cardColorList,
+          whichDayIsActive: state.whichDayIsActive,
+          lessonPlanOrChangePlan: state.lessonPlanOrChangePlan,
+        );
+      } else {
+        return const CircularProgressIndicator();
+      }
+    }),
+  );
+}
+
+Widget _lessonPlanOrLessonHoursShowOrChange(
   bool lessonPlanOrChangePlan,
   int whichDayIsActive,
   int index,
@@ -356,25 +344,7 @@ Widget _lessonPlanOrLessonHoursShowOrchange(
         ),
       ),
     );
-  } else if ((lessonPlanOrChangePlan == false) && (whichDayIsActive == 5)) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
-      child: TextFormField(
-        controller: controller[index],
-        onEditingComplete: () {
-          print(controller[index].text);
-        },
-        style: const TextStyle(fontSize: 20, color: Colors.red),
-        keyboardType: TextInputType.number,
-        textAlignVertical: TextAlignVertical.bottom,
-        inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9.-]'))],
-        decoration: const InputDecoration(
-          border: UnderlineInputBorder(),
-          hintText: 'gg.mm-gg.mm',
-        ),
-      ),
-    );
-  } else {
+  }  else {
     return Column(
       children: [
         const SizedBox(
@@ -389,32 +359,31 @@ Widget _lessonPlanOrLessonHoursShowOrchange(
   }
 }
 
-bool _activateOrDeactivateDaysAndHoursGestureDetector(
-  lessonPlanOrChangePlan,
-  List<TextEditingController> controller,
-  int whichDayIsActive,
-) {
-  if (lessonPlanOrChangePlan == true) {
-    return false;
+Widget _changingPlanButton(
+    bool lessonPlanOrChangePlan,
+    List<TextEditingController> controller,
+    int whichDayIsActive,
+    BuildContext context) {
+  if (whichDayIsActive != 5) {
+    return ElevatedButton(
+        style: ElevatedButton.styleFrom(
+            fixedSize: const Size(240, 50), primary: Colors.black26),
+        onPressed: () {
+          bool activateOrDeactivateDaysAndHoursGestureDetector =
+              activationOrDeactivationDaysAndHoursGestureDetector(
+            lessonPlanOrChangePlan,
+            controller,
+            whichDayIsActive,
+          );
+          context.read<LessonPlanCubit>().changePlanLayout(
+                whichDayIsActive,
+                activateOrDeactivateDaysAndHoursGestureDetector,
+              );
+          print(whichDayIsActive);
+        },
+        child: LessonPlanOrChangePlanButton(
+            lessonPlanOrChangePlan: lessonPlanOrChangePlan));
   } else {
-    List<String> newPlan = [];
-    for (int i = 0; i <= 7; i++) {
-      newPlan.add(controller[i].text);
-      _setNewPlan(
-        newPlan,
-        whichDayIsActive,
-      );
-    }
-    print(newPlan);
-    return true;
+    return Container();
   }
-}
-
-Future<void> _setNewPlan(
-  List<String> newPlan,
-  int whichDayIsActive,
-) async {
-  final prefs = await SharedPreferences.getInstance();
-  await prefs.setStringList(
-      lessonPlanKeysInSharedpreferences[whichDayIsActive], newPlan);
 }

@@ -11,8 +11,10 @@ class HomeworkCubit extends Cubit<HomeworkState> {
   Future<void> _updateHomeWorks() async {
     final timeNow = DateTime.now();
     final prefs = await SharedPreferences.getInstance();
-    final int dayOfListUpdate = prefs.getInt(dayOfListUpdateKey) ?? 0;
-    if (dayOfListUpdate != timeNow.weekday) {
+    final int dayOfHomeWorkListLastUpdate =
+        prefs.getInt(dayOfHomeWorkListLastUpdateKey) ?? 0;
+    if ((dayOfHomeWorkListLastUpdate != timeNow.weekday) &&
+        (isNotWeekend(timeNow.weekday))) {
       await prefs.remove(homeWorkKey);
       final List<String> homeWorks = prefs.getStringList(homeWorkKey) ?? [];
       emit(HomeworkLoaded(homeWorks));
@@ -30,14 +32,14 @@ class HomeworkCubit extends Cubit<HomeworkState> {
       timeNow.hour,
       timeNow.minute,
     );
-    if ((lessonNumber != noSuchLesson) && (timeNow.weekday <= 5)) {
+    if ((lessonNumber != noSuchLesson) && (isNotWeekend(timeNow.weekday))) {
       final prefs = await SharedPreferences.getInstance();
-      final List<String> lessonPlanFor_getHomeWorkName = prefs.getStringList(
-              lessonPlanKeysInSharedpreferences[timeNow.weekday - 1]) ??
-          defaultLessonPlan;
-      final homeWorkName = lessonPlanFor_getHomeWorkName[lessonNumber - 1];
+      final List<String> actualLessonPlan =
+          prefs.getStringList(lessonPlanKeys[timeNow.weekday - 1]) ??
+              defaultLessonPlan;
+      final homeWorkName = actualLessonPlan[lessonNumber - 1];
       final List<String> homeWorkList = prefs.getStringList(homeWorkKey) ?? [];
-      await prefs.setInt(dayOfListUpdateKey, timeNow.weekday);
+      await prefs.setInt(dayOfHomeWorkListLastUpdateKey, timeNow.weekday);
       _checkAndAddToListIfNeeded(homeWorkName, homeWorkList);
       await prefs.setStringList(homeWorkKey, homeWorkList);
       emit(HomeworkLoaded(homeWorkList));
@@ -49,36 +51,24 @@ class HomeworkCubit extends Cubit<HomeworkState> {
     int hour,
     int minute,
   ) {
-    final int lesson;
+    int lesson = noSuchLesson;
+    final double timeConversionToCompareWithLessonHours =
+        hour * 60 + minute * 60 / 100;
 
-    if (((hour == 8) && (minute >= 0) && (minute <= 55))) {
-      lesson = 1;
-    } else if (((hour == 8) && (minute > 55) && (minute <= 59)) ||
-        ((hour == 9) && (minute >= 0) && (minute <= 50))) {
-      lesson = 2;
-    } else if (((hour == 9) && (minute > 50) && (minute <= 59)) ||
-        ((hour == 10) && (minute >= 0) && (minute <= 45))) {
-      lesson = 3;
-    } else if (((hour == 10) && (minute > 45) && (minute <= 59)) ||
-        ((hour == 11) && (minute >= 0) && (minute <= 45))) {
-      lesson = 4;
-    } else if (((hour == 11) && (minute > 45) && (minute <= 59)) ||
-        ((hour == 12) && (minute >= 0) && (minute <= 45))) {
-      lesson = 5;
-    } else if (((hour == 12) && (minute > 45) && (minute <= 59)) ||
-        ((hour == 13) && (minute >= 0) && (minute <= 40))) {
-      lesson = 6;
-    } else if (((hour == 13) && (minute > 40) && (minute <= 59)) ||
-        ((hour == 14) && (minute >= 0) && (minute <= 35))) {
-      lesson = 7;
-    } else if (((hour == 14) && (minute > 35) && (minute <= 59)) ||
-        ((hour == 15) && (minute >= 0) && (minute <= 30))) {
-      lesson = 8;
-    } else {
-      lesson = noSuchLesson;
+    if ((timeConversionToCompareWithLessonHours >= lessonHours.first * 60) &&
+        (timeConversionToCompareWithLessonHours < lessonHours.last * 60)) {
+      for (int i = 1; i <= 8; i++) {
+        if ((timeConversionToCompareWithLessonHours >=
+                lessonHours[i * 2 - 2] * 60) &&
+            (timeConversionToCompareWithLessonHours <
+                lessonHours[i * 2] * 60)) {
+          lesson = i;
+        }
+      }
     }
     return lesson;
   }
+
   void _checkAndAddToListIfNeeded(String lessonName, List homeWorkList) {
     if (((homeWorkList.isEmpty) || (lessonName != homeWorkList.last)) &&
         (lessonName != 'none')) {
@@ -87,6 +77,10 @@ class HomeworkCubit extends Cubit<HomeworkState> {
   }
 }
 
+bool isNotWeekend(int timeNow) {
+  return timeNow <= 5;
+}
+
 const int noSuchLesson = 500;
 const String homeWorkKey = "HOME_WORK";
-const String dayOfListUpdateKey = "DAY_OF_LIST_UPDATE";
+const String dayOfHomeWorkListLastUpdateKey = "DAY_OF_LIST_UPDATE";

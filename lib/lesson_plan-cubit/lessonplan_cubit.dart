@@ -6,123 +6,22 @@ part 'lessonplan_state.dart';
 
 class LessonPlanCubit extends Cubit<LessonPlanState> {
   LessonPlanCubit() : super(const LessonPlanInitial()) {
-    _loadHours(true);
+    _loadHours(initialValueFirstParameter, initialValueSecondParameter);
   }
-
-  Future<void> _loadMonday(bool lessonPlanOrChangePlan) async {
-    const int whichDayIsActive = 0;
+  Future<void> _loadDays(bool lessonPlanOrChangePlan, int index) async {
+    final int whichDayIsActive = index;
     final prefs = await SharedPreferences.getInstance();
-    final List<String> currentDayPlan = prefs.getStringList(
-            lessonPlanKeysInSharedpreferences[whichDayIsActive]) ??
-        defaultLessonPlan;
-    final List<List<Color>> cardColorList = [
-      [Colors.white, Colors.black],
-      [Colors.black26, Colors.white],
-      [Colors.black26, Colors.white],
-      [Colors.black26, Colors.white],
-      [Colors.black26, Colors.white],
-      [Colors.black26, Colors.white],
-    ];
+    final List<String> currentDayPlan =
+        prefs.getStringList(lessonPlanKeys[whichDayIsActive]) ??
+            defaultLessonPlan;
+    final List<List<Color>> cardColorList =
+        _loadCardColorList(whichDayIsActive);
     emit(LessonPlan(cardColorList, currentDayPlan, whichDayIsActive,
         lessonPlanOrChangePlan));
   }
 
-  Future<void> _loadTuesday(bool lessonPlanOrChangePlan) async {
-    const int whichDayIsActive = 1;
-    final prefs = await SharedPreferences.getInstance();
-    final List<String> currentDayPlan = prefs.getStringList(
-            lessonPlanKeysInSharedpreferences[whichDayIsActive]) ??
-        defaultLessonPlan;
-    final List<List<Color>> cardColorList = [
-      [Colors.black26, Colors.white],
-      [Colors.white, Colors.black],
-      [Colors.black26, Colors.white],
-      [Colors.black26, Colors.white],
-      [Colors.black26, Colors.white],
-      [Colors.black26, Colors.white],
-    ];
-    emit(LessonPlan(cardColorList, currentDayPlan, whichDayIsActive,
-        lessonPlanOrChangePlan));
-  }
-
-  Future<void> _loadWendesday(bool lessonPlanOrChangePlan) async {
-    const int whichDayIsActive = 2;
-
-    final prefs = await SharedPreferences.getInstance();
-    final List<String> currentDayPlan = prefs.getStringList(
-            lessonPlanKeysInSharedpreferences[whichDayIsActive]) ??
-        defaultLessonPlan;
-    final List<List<Color>> cardColorList = [
-      [Colors.black26, Colors.white],
-      [Colors.black26, Colors.white],
-      [Colors.white, Colors.black],
-      [Colors.black26, Colors.white],
-      [Colors.black26, Colors.white],
-      [Colors.black26, Colors.white],
-    ];
-    emit(LessonPlan(cardColorList, currentDayPlan, whichDayIsActive,
-        lessonPlanOrChangePlan));
-  }
-
-  Future<void> _loadThursday(bool lessonPlanOrChangePlan) async {
-    const int whichDayIsActive = 3;
-
-    final prefs = await SharedPreferences.getInstance();
-    final List<String> currentDayPlan = prefs.getStringList(
-            lessonPlanKeysInSharedpreferences[whichDayIsActive]) ??
-        defaultLessonPlan;
-    final List<List<Color>> cardColorList = [
-      [Colors.black26, Colors.white],
-      [Colors.black26, Colors.white],
-      [Colors.black26, Colors.white],
-      [Colors.white, Colors.black],
-      [Colors.black26, Colors.white],
-      [Colors.black26, Colors.white],
-    ];
-    emit(LessonPlan(cardColorList, currentDayPlan, whichDayIsActive,
-        lessonPlanOrChangePlan));
-  }
-
-  Future<void> _loadFriday(bool lessonPlanOrChangePlan) async {
-    const int whichDayIsActive = 4;
-
-    final prefs = await SharedPreferences.getInstance();
-    final List<String> currentDayPlan = prefs.getStringList(
-            lessonPlanKeysInSharedpreferences[whichDayIsActive]) ??
-        defaultLessonPlan;
-    final List<List<Color>> cardColorList = [
-      [Colors.black26, Colors.white],
-      [Colors.black26, Colors.white],
-      [Colors.black26, Colors.white],
-      [Colors.black26, Colors.white],
-      [Colors.white, Colors.black],
-      [Colors.black26, Colors.white],
-    ];
-    emit(LessonPlan(cardColorList, currentDayPlan, whichDayIsActive,
-        lessonPlanOrChangePlan));
-  }
-
-  void _loadHours(bool lessonPlanOrChangePlan) {
-    const int whichDayIsActive = 5;
-
-    const List<double> lessonHours = [
-      8.00,
-      8.45,
-      8.55,
-      9.40,
-      9.50,
-      10.35,
-      10.45,
-      11.30,
-      11.45,
-      12.30,
-      12.45,
-      13.30,
-      13.40,
-      14.25,
-      14.35,
-      15.20
-    ];
+  void _loadHours(bool lessonPlanOrChangePlan, int index) {
+    final int whichDayIsActive = index;
     final List<String> currentDayPlan = [
       '${lessonHours[0].toStringAsFixed(2)}-${lessonHours[1].toStringAsFixed(2)}',
       '${lessonHours[2].toStringAsFixed(2)}-${lessonHours[3].toStringAsFixed(2)}',
@@ -133,48 +32,45 @@ class LessonPlanCubit extends Cubit<LessonPlanState> {
       '${lessonHours[12].toStringAsFixed(2)}-${lessonHours[13].toStringAsFixed(2)}',
       '${lessonHours[14].toStringAsFixed(2)}-${lessonHours[15].toStringAsFixed(2)}',
     ];
-    final List<List<Color>> cardColorList = [
-      [Colors.black26, Colors.white],
-      [Colors.black26, Colors.white],
-      [Colors.black26, Colors.white],
-      [Colors.black26, Colors.white],
-      [Colors.black26, Colors.white],
-      [Colors.white, Colors.black],
-    ];
+    final List<List<Color>> cardColorList =
+        _loadCardColorList(whichDayIsActive);
+
     emit(LessonPlan(cardColorList, currentDayPlan, whichDayIsActive,
         lessonPlanOrChangePlan));
   }
 
   void changePlanLayout(int index, bool lessonPlanOrChangePlan) {
-    if (index == 1) {
-      _loadTuesday(lessonPlanOrChangePlan);
-      print('dzień$index');
-    } else if (index == 2) {
-      _loadWendesday(lessonPlanOrChangePlan);
-      print('dzień$index');
-    } else if (index == 3) {
-      _loadThursday(lessonPlanOrChangePlan);
-      print('dzień$index');
-    } else if (index == 4) {
-      _loadFriday(lessonPlanOrChangePlan);
-      print('dzień$index');
-    } else if (index == 5) {
-      _loadHours(lessonPlanOrChangePlan);
+    if (index == 5) {
+      _loadHours(lessonPlanOrChangePlan, index);
       print('dzień$index');
     } else {
-      _loadMonday(lessonPlanOrChangePlan);
+      _loadDays(lessonPlanOrChangePlan, index);
       print('dzień$index');
     }
   }
+
+  List<List<Color>> _loadCardColorList(int whichDayIsActive) {
+    List<List<Color>> cardColorList = [
+      [Colors.black26, Colors.white],
+      [Colors.black26, Colors.white],
+      [Colors.black26, Colors.white],
+      [Colors.black26, Colors.white],
+      [Colors.black26, Colors.white],
+      [Colors.black26, Colors.white],
+    ];
+
+    cardColorList.insert(whichDayIsActive, [Colors.white, Colors.black]);
+
+    return cardColorList;
+  }
 }
 
-const List<String> lessonPlanKeysInSharedpreferences = [
+const List<String> lessonPlanKeys = [
   'monday',
   'tuesday',
   'wednesday',
   'thursday',
   'friday',
-  'hours',
 ];
 const List<String> defaultLessonPlan = [
   'a',
@@ -186,3 +82,53 @@ const List<String> defaultLessonPlan = [
   'g',
   'h',
 ];
+
+const List<double> lessonHours = [
+  8.00,
+  8.45,
+  8.55,
+  9.40,
+  9.50,
+  10.35,
+  10.45,
+  11.30,
+  11.45,
+  12.30,
+  12.45,
+  13.30,
+  13.40,
+  14.25,
+  14.35,
+  15.20,
+  15.50,
+];
+bool activationOrDeactivationDaysAndHoursGestureDetector(
+  lessonPlanOrChangePlan,
+  List<TextEditingController> controller,
+  int whichDayIsActive,
+) {
+  if (lessonPlanOrChangePlan == true) {
+    return false;
+  } else {
+    List<String> newPlan = [];
+    for (int i = 0; i <= 7; i++) {
+      newPlan.add(controller[i].text);
+      setNewPlan(
+        newPlan,
+        whichDayIsActive,
+      );
+    }
+    print(newPlan);
+    return true;
+  }
+}
+
+Future<void> setNewPlan(
+  List<String> newPlan,
+  int whichDayIsActive,
+) async {
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setStringList(lessonPlanKeys[whichDayIsActive], newPlan);
+}
+const bool initialValueFirstParameter = true;
+const int initialValueSecondParameter =5;
