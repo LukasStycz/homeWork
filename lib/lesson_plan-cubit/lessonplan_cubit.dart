@@ -8,6 +8,7 @@ class LessonPlanCubit extends Cubit<LessonPlanState> {
   LessonPlanCubit() : super(const LessonPlanInitial()) {
     _loadHours(initialValueFirstParameter, initialValueSecondParameter);
   }
+
   Future<void> _loadDays(bool lessonPlanOrChangePlan, int index) async {
     final int whichDayIsActive = index;
     final prefs = await SharedPreferences.getInstance();
@@ -21,7 +22,7 @@ class LessonPlanCubit extends Cubit<LessonPlanState> {
   }
 
   void _loadHours(bool lessonPlanOrChangePlan, int index) {
-    final int whichDayIsActive = index;
+    // final int whichDayIsActive = index;
     final List<String> currentDayPlan = [
       '${lessonHours[0].toStringAsFixed(2)}-${lessonHours[1].toStringAsFixed(2)}',
       '${lessonHours[2].toStringAsFixed(2)}-${lessonHours[3].toStringAsFixed(2)}',
@@ -33,10 +34,17 @@ class LessonPlanCubit extends Cubit<LessonPlanState> {
       '${lessonHours[14].toStringAsFixed(2)}-${lessonHours[15].toStringAsFixed(2)}',
     ];
     final List<List<Color>> cardColorList =
-        _loadCardColorList(whichDayIsActive);
+        _loadCardColorList(index);
 
-    emit(LessonPlan(cardColorList, currentDayPlan, whichDayIsActive,
+    emit(LessonPlan(cardColorList, currentDayPlan, index,
         lessonPlanOrChangePlan));
+  }
+
+  /// zmien ta nazwa
+  void changePlanLayout2(List<TextEditingController> controller) {
+    final bool isDayTileEnabled = _isDayTileEnabled(controller);
+    /// currentState sprawdz zeby byl lessonPlan i wtedy dodaj index ze stare i lessonPlancostam ze state
+    changePlanLayout(index, lessonPlanOrChangePlan)
   }
 
   void changePlanLayout(int index, bool lessonPlanOrChangePlan) {
@@ -62,6 +70,26 @@ class LessonPlanCubit extends Cubit<LessonPlanState> {
     cardColorList.insert(whichDayIsActive, [Colors.white, Colors.black]);
 
     return cardColorList;
+  }
+
+  bool _isDayTileEnabled(
+    List<TextEditingController> controller,
+  ) {
+    final LessonPlanState currentState = state;
+    if (currentState is LessonPlan && !currentState.lessonPlanOrChangePlan) {
+      List<String> newPlan = [];
+      for (int i = 0; i <= 7; i++) {
+        newPlan.add(controller[i].text);
+        setNewPlan(
+          newPlan,
+          currentState.whichDayIsActive,
+        );
+      }
+      print(newPlan);
+      return true;
+    } else {
+      return false;
+    }
   }
 }
 
@@ -102,26 +130,6 @@ const List<double> lessonHours = [
   15.20,
   15.50,
 ];
-bool activationOrDeactivationDaysAndHoursGestureDetector(
-  lessonPlanOrChangePlan,
-  List<TextEditingController> controller,
-  int whichDayIsActive,
-) {
-  if (lessonPlanOrChangePlan == true) {
-    return false;
-  } else {
-    List<String> newPlan = [];
-    for (int i = 0; i <= 7; i++) {
-      newPlan.add(controller[i].text);
-      setNewPlan(
-        newPlan,
-        whichDayIsActive,
-      );
-    }
-    print(newPlan);
-    return true;
-  }
-}
 
 Future<void> setNewPlan(
   List<String> newPlan,
@@ -130,5 +138,6 @@ Future<void> setNewPlan(
   final prefs = await SharedPreferences.getInstance();
   await prefs.setStringList(lessonPlanKeys[whichDayIsActive], newPlan);
 }
+
 const bool initialValueFirstParameter = true;
-const int initialValueSecondParameter =5;
+const int initialValueSecondParameter = 5;

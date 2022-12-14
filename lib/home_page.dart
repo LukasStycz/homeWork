@@ -108,7 +108,7 @@ class _Pages extends StatelessWidget {
             ),
           ),
           _pagesHomeWorkList(state),
-          _pagesLessonPlanPage(),
+          const PagesLessPlanPage(),
         ],
       );
     });
@@ -265,10 +265,11 @@ class LessonPlanPage extends StatelessWidget {
           height: 75,
         ),
         _changingPlanButton(
-             lessonPlanOrChangePlan,
-            _controller,
-             whichDayIsActive,
-             context,)
+          lessonPlanOrChangePlan,
+          _controller,
+          whichDayIsActive,
+          context,
+        )
       ],
     );
   }
@@ -304,25 +305,30 @@ Widget _pagesHomeWorkList(state) {
   }
 }
 
-Widget _pagesLessonPlanPage() {
-  return BlocProvider(
-    create: (context) => LessonPlanCubit(),
-    child: BlocBuilder<LessonPlanCubit, LessonPlanState>(builder: (
-      BuildContext context,
-      LessonPlanState state,
-    ) {
-      if (state is LessonPlan) {
-        return LessonPlanPage(
-          currentDayPlan: state.currentDayPlan,
-          cardColorList: state.cardColorList,
-          whichDayIsActive: state.whichDayIsActive,
-          lessonPlanOrChangePlan: state.lessonPlanOrChangePlan,
-        );
-      } else {
-        return const CircularProgressIndicator();
-      }
-    }),
-  );
+class PagesLessPlanPage extends StatelessWidget {
+  const PagesLessPlanPage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => LessonPlanCubit(),
+      child: BlocBuilder<LessonPlanCubit, LessonPlanState>(builder: (
+        BuildContext context,
+        LessonPlanState state,
+      ) {
+        if (state is LessonPlan) {
+          return LessonPlanPage(
+            currentDayPlan: state.currentDayPlan,
+            cardColorList: state.cardColorList,
+            whichDayIsActive: state.whichDayIsActive,
+            lessonPlanOrChangePlan: state.lessonPlanOrChangePlan,
+          );
+        } else {
+          return const CircularProgressIndicator();
+        }
+      }),
+    );
+  }
 }
 
 Widget _lessonPlanOrLessonHoursShowOrChange(
@@ -344,7 +350,7 @@ Widget _lessonPlanOrLessonHoursShowOrChange(
         ),
       ),
     );
-  }  else {
+  } else {
     return Column(
       children: [
         const SizedBox(
@@ -360,25 +366,19 @@ Widget _lessonPlanOrLessonHoursShowOrChange(
 }
 
 Widget _changingPlanButton(
-    bool lessonPlanOrChangePlan,
-    List<TextEditingController> controller,
-    int whichDayIsActive,
-    BuildContext context) {
+  bool lessonPlanOrChangePlan,
+  List<TextEditingController> controller,
+  int whichDayIsActive,
+  BuildContext context,
+) {
   if (whichDayIsActive != 5) {
     return ElevatedButton(
         style: ElevatedButton.styleFrom(
-            fixedSize: const Size(240, 50), primary: Colors.black26),
+          fixedSize: const Size(240, 50),
+          backgroundColor: Colors.black26,
+        ),
         onPressed: () {
-          bool activateOrDeactivateDaysAndHoursGestureDetector =
-              activationOrDeactivationDaysAndHoursGestureDetector(
-            lessonPlanOrChangePlan,
-            controller,
-            whichDayIsActive,
-          );
-          context.read<LessonPlanCubit>().changePlanLayout(
-                whichDayIsActive,
-                activateOrDeactivateDaysAndHoursGestureDetector,
-              );
+          context.read<LessonPlanCubit>().changePlanLayout2(controller);
           print(whichDayIsActive);
         },
         child: LessonPlanOrChangePlanButton(
