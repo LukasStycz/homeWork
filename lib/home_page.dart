@@ -13,13 +13,13 @@ class HomePage extends StatelessWidget {
     return DefaultTabController(
       length: _tabSize,
       child: Scaffold(
-        backgroundColor: Colors.yellow,
+        backgroundColor: Colors.white,
         appBar: AppBar(
-          foregroundColor: _tabBarPrimaryColor,
-          backgroundColor: _tabBarSecondaryColor,
+          foregroundColor: Colors.white,
+          backgroundColor: Colors.indigoAccent,
           title: const Text("Prace domowe"),
           bottom: const TabBar(
-            indicatorColor: _tabBarPrimaryColor,
+            indicatorColor: Colors.white,
             indicatorWeight: 4.0,
             isScrollable: true,
             tabs: [
@@ -43,8 +43,8 @@ class _AddHomeWorkTab extends StatelessWidget {
     return const Tab(
       icon: Icon(
         Icons.playlist_add_outlined,
-        color: _tabBarPrimaryColor,
-        size: _tabBarIconSize,
+        color: Colors.white,
+        size: 50.0,
       ),
     );
   }
@@ -58,8 +58,8 @@ class _HomeWorksTab extends StatelessWidget {
     return const Tab(
       icon: Icon(
         Icons.home_work,
-        color: _tabBarPrimaryColor,
-        size: _tabBarIconSize,
+        color: Colors.white,
+        size: 50.0,
       ),
     );
   }
@@ -73,16 +73,12 @@ class _LessonPlanTab extends StatelessWidget {
     return const Tab(
       icon: Icon(
         Icons.table_rows_rounded,
-        color: _tabBarPrimaryColor,
-        size: _tabBarIconSize,
+        color: Colors.white,
+        size: 50.0,
       ),
     );
   }
 }
-
-const Color _tabBarPrimaryColor = Colors.indigoAccent;
-const double _tabBarIconSize = 50.0;
-const Color _tabBarSecondaryColor = Colors.white;
 
 class _Pages extends StatelessWidget {
   const _Pages({Key? key}) : super(key: key);
@@ -96,18 +92,25 @@ class _Pages extends StatelessWidget {
       return TabBarView(
         children: [
           Scaffold(
-            backgroundColor: Colors.red,
-            floatingActionButton: FloatingActionButton.large(
-              backgroundColor: _tabBarSecondaryColor,
-              foregroundColor: _tabBarPrimaryColor,
-              splashColor: Colors.red,
-              onPressed: () {
-                context.read<HomeworkCubit>().addNewHomeWorkIfNeeded();
-              },
-              child: const Text("Dodaj Prace Domową"),
+            floatingActionButtonLocation:
+                FloatingActionButtonLocation.centerTop,
+            backgroundColor: Colors.white,
+            floatingActionButton: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                FloatingActionButton.extended(
+                  backgroundColor: Colors.indigoAccent,
+                  foregroundColor: Colors.white,
+                  onPressed: () {
+                    context.read<HomeworkCubit>().addNewHomeWorkIfNeeded();
+                  },
+                  label: const Text("Dodaj Prace Domową"),
+                  icon: const Icon(Icons.add),
+                ),
+              ],
             ),
           ),
-          _pagesHomeWorkList(state),
+          _pagesHomeWorkListPage(state),
           _pagesLessonPlanPage(),
         ],
       );
@@ -124,8 +127,9 @@ class HomeWorkListLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
-        color: Colors.green,
-      ),
+          color: Colors.indigoAccent,
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+          boxShadow: [BoxShadow(blurRadius: 10.0)]),
       child: ListView.builder(
           itemBuilder: (BuildContext context, int index) {
             return Container(
@@ -192,108 +196,153 @@ class LessonPlanPage extends StatelessWidget {
         const SizedBox(
           height: 20,
         ),
-        SizedBox(
-          height: 50,
-          width: double.infinity,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: lessonPlanDaysAndHours.length,
-            itemBuilder: (BuildContext context, int index) {
-              return GestureDetector(
-                onTap: () {
-                  if (lessonPlanOrChangePlan == true) {
-                    context
-                        .read<LessonPlanCubit>()
-                        .changePlanLayout(index, lessonPlanOrChangePlan);
-                  }
+        Row(
+          children: [
+            SizedBox(
+              height: 50,
+              width: 360,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: lessonPlanDaysAndHours.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return GestureDetector(
+                    onTap: () {
+                      if (lessonPlanOrChangePlan == true) {
+                        context
+                            .read<LessonPlanCubit>()
+                            .changePlanLayout(index, lessonPlanOrChangePlan);
+                      }
+                    },
+                    child: Container(
+                      margin: const EdgeInsets.only(left: 5),
+                      width: 40,
+                      decoration: BoxDecoration(
+                          color: cardColorList[index][0],
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(10))),
+                      child: Column(
+                        children: [
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Text(
+                            lessonPlanDaysAndHours[index],
+                            style: TextStyle(
+                                fontSize: 18,
+                                color: cardColorList[index][1],
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
                 },
-                child: Container(
-                  margin: const EdgeInsets.only(left: 5, right: 5),
-                  height: 70,
-                  width: 50,
-                  decoration: BoxDecoration(
-                      color: cardColorList[index][0],
-                      borderRadius:
-                          const BorderRadius.all(Radius.circular(10))),
-                  child: Column(
-                    children: [
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Text(
-                        lessonPlanDaysAndHours[index],
-                        style: TextStyle(
-                            fontSize: 18,
-                            color: cardColorList[index][1],
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
+              ),
+            ),
+            Flexible(
+              child: Container(),
+            ),
+            changeLessonPlanButton(context),
+            const SizedBox(
+              width: 5,
+            )
+          ],
         ),
         const SizedBox(
           height: 20,
         ),
-        Container(
-          width: double.infinity,
-          height: 525,
-          decoration: const BoxDecoration(
-              color: Colors.purple, boxShadow: [BoxShadow(blurRadius: 10.0)]),
-          child: ListView.builder(
-              itemBuilder: (BuildContext context, int index) {
-                return Container(
-                  margin: const EdgeInsets.only(left: 5, right: 5, top: 5),
-                  height: 60,
-                  width: 50,
-                  decoration: const BoxDecoration(
-                      color: Colors.black26,
-                      borderRadius: BorderRadius.all(Radius.circular(10))),
-                  child: _lessonPlanOrLessonHoursShowOrChange(
-                      lessonPlanOrChangePlan,
-                      whichDayIsActive,
-                      index,
-                      _controller,
-                      currentDayPlan),
-                );
-              },
-              itemCount: currentDayPlan.length),
+        Flexible(
+          child: Container(
+            width: double.infinity,
+            decoration: const BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+                color: Colors.indigoAccent,
+                boxShadow: [BoxShadow(blurRadius: 10.0)]),
+            child: ListView.builder(
+                itemBuilder: (BuildContext context, int index) {
+                  return Container(
+                    margin: const EdgeInsets.only(left: 5, right: 5, top: 5),
+                    height: 60,
+                    width: 50,
+                    decoration: const BoxDecoration(
+                        color: Colors.black26,
+                        borderRadius: BorderRadius.all(Radius.circular(10))),
+                    child: _lessonPlanOrLessonHoursShowOrChange(
+                        lessonPlanOrChangePlan,
+                        whichDayIsActive,
+                        index,
+                        _controller,
+                        currentDayPlan),
+                  );
+                },
+                itemCount: currentDayPlan.length),
+          ),
         ),
-        const SizedBox(
-          height: 75,
-        ),
-        _changingPlanButton(
-             lessonPlanOrChangePlan,
-            _controller,
-             whichDayIsActive,
-             context,)
       ],
     );
   }
+
+  Widget changeLessonPlanButton(BuildContext context) {
+    if (whichDayIsActive != 5) {
+      return FloatingActionButton(
+          backgroundColor: Colors.indigoAccent,
+          foregroundColor: Colors.white,
+          onPressed: () {
+            bool activateOrDeactivateDaysAndHoursGestureDetector =
+                activationOrDeactivationDaysAndHoursGestureDetector(
+              lessonPlanOrChangePlan,
+              _controller,
+              whichDayIsActive,
+            );
+            context.read<LessonPlanCubit>().changePlanLayout(
+                  whichDayIsActive,
+                  activateOrDeactivateDaysAndHoursGestureDetector,
+                );
+            print(whichDayIsActive);
+          },
+          child:
+              LoadOrSaveIcon(lessonPlanOrChangePlan: lessonPlanOrChangePlan));
+    } else {
+      return const SizedBox(
+        height: 56,
+        width: 1,
+      );
+    }
+  }
 }
 
-class LessonPlanOrChangePlanButton extends StatelessWidget {
-  const LessonPlanOrChangePlanButton(
-      {required this.lessonPlanOrChangePlan, Key? key})
+class LoadOrSaveIcon extends StatelessWidget {
+  const LoadOrSaveIcon({required this.lessonPlanOrChangePlan, Key? key})
       : super(key: key);
   final bool lessonPlanOrChangePlan;
 
   @override
   Widget build(BuildContext context) {
     if (lessonPlanOrChangePlan == true) {
-      return const Text(
-        'Zmień',
-        style: TextStyle(fontSize: 25),
-      );
+      return const Icon(Icons.change_circle_outlined);
     } else {
-      return const Text(
-        'Zapisz',
-        style: TextStyle(fontSize: 25),
-      );
+      return const Icon(Icons.save_outlined);
     }
   }
+}
+
+Widget _pagesHomeWorkListPage(state) {
+  return Column(
+    children: [
+      const Padding(
+        padding: EdgeInsets.all(10.0),
+        child: Text(
+          'Lista Zadań Domowych',
+          textAlign: TextAlign.center,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(fontSize: 30, color: Colors.red),
+        ),
+      ),
+      Flexible(
+        child: _pagesHomeWorkList(state),
+      ),
+    ],
+  );
 }
 
 Widget _pagesHomeWorkList(state) {
@@ -344,7 +393,7 @@ Widget _lessonPlanOrLessonHoursShowOrChange(
         ),
       ),
     );
-  }  else {
+  } else {
     return Column(
       children: [
         const SizedBox(
@@ -356,34 +405,5 @@ Widget _lessonPlanOrLessonHoursShowOrChange(
         ),
       ],
     );
-  }
-}
-
-Widget _changingPlanButton(
-    bool lessonPlanOrChangePlan,
-    List<TextEditingController> controller,
-    int whichDayIsActive,
-    BuildContext context) {
-  if (whichDayIsActive != 5) {
-    return ElevatedButton(
-        style: ElevatedButton.styleFrom(
-            fixedSize: const Size(240, 50), primary: Colors.black26),
-        onPressed: () {
-          bool activateOrDeactivateDaysAndHoursGestureDetector =
-              activationOrDeactivationDaysAndHoursGestureDetector(
-            lessonPlanOrChangePlan,
-            controller,
-            whichDayIsActive,
-          );
-          context.read<LessonPlanCubit>().changePlanLayout(
-                whichDayIsActive,
-                activateOrDeactivateDaysAndHoursGestureDetector,
-              );
-          print(whichDayIsActive);
-        },
-        child: LessonPlanOrChangePlanButton(
-            lessonPlanOrChangePlan: lessonPlanOrChangePlan));
-  } else {
-    return Container();
   }
 }

@@ -51,15 +51,15 @@ class LessonPlanCubit extends Cubit<LessonPlanState> {
 
   List<List<Color>> _loadCardColorList(int whichDayIsActive) {
     List<List<Color>> cardColorList = [
-      [Colors.black26, Colors.white],
-      [Colors.black26, Colors.white],
-      [Colors.black26, Colors.white],
-      [Colors.black26, Colors.white],
-      [Colors.black26, Colors.white],
-      [Colors.black26, Colors.white],
+      [Colors.black26, Colors.indigoAccent],
+      [Colors.black26, Colors.indigoAccent],
+      [Colors.black26, Colors.indigoAccent],
+      [Colors.black26, Colors.indigoAccent],
+      [Colors.black26, Colors.indigoAccent],
+      [Colors.black26, Colors.indigoAccent],
     ];
 
-    cardColorList.insert(whichDayIsActive, [Colors.white, Colors.black]);
+    cardColorList.insert(whichDayIsActive, [Colors.indigoAccent, Colors.black]);
 
     return cardColorList;
   }
