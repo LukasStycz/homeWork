@@ -112,7 +112,7 @@ class _Pages extends StatelessWidget {
             ),
           ),
           _pagesHomeWorkListPage(state, context),
-          _pagesLessonPlanPage(),
+          _pagesLessonPlanPage(context),
         ],
       );
     });
@@ -160,13 +160,14 @@ class HomeWorkListLayout extends StatelessWidget {
 }
 
 class LessonPlanPage extends StatelessWidget {
-  LessonPlanPage(
-      {required this.currentDayPlan,
-      required this.cardColorList,
-      required this.whichDayIsActive,
-      required this.lessonPlanOrChangePlan,
-      Key? key})
-      : super(key: key);
+  LessonPlanPage({
+    required this.lessonPlanDaysAndHours,
+    required this.currentDayPlan,
+    required this.cardColorList,
+    required this.whichDayIsActive,
+    required this.lessonPlanOrChangePlan,
+    Key? key,
+  }) : super(key: key);
   final List<TextEditingController> _controller = [
     TextEditingController(),
     TextEditingController(),
@@ -177,6 +178,7 @@ class LessonPlanPage extends StatelessWidget {
     TextEditingController(),
     TextEditingController(),
   ];
+  final List<String> lessonPlanDaysAndHours;
   final bool lessonPlanOrChangePlan;
   final List<String> currentDayPlan;
   final List<List<Color>> cardColorList;
@@ -184,14 +186,6 @@ class LessonPlanPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<String> lessonPlanDaysAndHours = [
-      AppLocalizations.of(context)!.fourthString,
-      AppLocalizations.of(context)!.fifthString,
-      AppLocalizations.of(context)!.sixthString,
-      AppLocalizations.of(context)!.seventhString,
-      AppLocalizations.of(context)!.eighthString,
-      AppLocalizations.of(context)!.ninthString,
-    ];
     return Column(
       children: [
         const SizedBox(
@@ -374,15 +368,17 @@ Widget _pagesHomeWorkList(state) {
   }
 }
 
-Widget _pagesLessonPlanPage() {
+Widget _pagesLessonPlanPage(BuildContext context) {
+  final localizations = AppLocalizations.of(context)!;
   return BlocProvider(
-    create: (context) => LessonPlanCubit(),
+    create: (context) => LessonPlanCubit(localizations),
     child: BlocBuilder<LessonPlanCubit, LessonPlanState>(builder: (
       BuildContext context,
       LessonPlanState state,
     ) {
       if (state is LessonPlan) {
         return LessonPlanPage(
+          lessonPlanDaysAndHours: state.lessonPlanDaysAndHours,
           currentDayPlan: state.currentDayPlan,
           cardColorList: state.cardColorList,
           whichDayIsActive: state.whichDayIsActive,

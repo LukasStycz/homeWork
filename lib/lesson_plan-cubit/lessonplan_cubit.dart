@@ -1,12 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 part 'lessonplan_state.dart';
 
 class LessonPlanCubit extends Cubit<LessonPlanState> {
-  LessonPlanCubit() : super(const LessonPlanInitial()) {
+  LessonPlanCubit(this.localizations) : super(const LessonPlanInitial()) {
+    lessonPlanDaysAndHours = [
+      localizations.fourthString,
+      localizations.fifthString,
+      localizations.sixthString,
+      localizations.seventhString,
+      localizations.eighthString,
+      localizations.ninthString,
+    ];
     _loadHours(initialValueFirstParameter, initialValueSecondParameter);
   }
+
+  final AppLocalizations localizations;
+
+  List<String> lessonPlanDaysAndHours = [];
+
   int _whichDayIsActiveForUndoSetNewPlan =
       initialValueOfWhichDayIsActiveForUndoSetNewPlan;
   List<String> _lessonPlanListForUndoSetNewPlan =
@@ -20,8 +35,8 @@ class LessonPlanCubit extends Cubit<LessonPlanState> {
             defaultLessonPlan;
     final List<List<Color>> cardColorList =
         _loadCardColorList(whichDayIsActive);
-    emit(LessonPlan(cardColorList, currentDayPlan, whichDayIsActive,
-        lessonPlanOrChangePlan));
+    emit(LessonPlan(lessonPlanDaysAndHours, cardColorList, currentDayPlan,
+        whichDayIsActive, lessonPlanOrChangePlan));
   }
 
   void _loadHours(bool lessonPlanOrChangePlan, int index) {
@@ -39,8 +54,8 @@ class LessonPlanCubit extends Cubit<LessonPlanState> {
     final List<List<Color>> cardColorList =
         _loadCardColorList(whichDayIsActive);
 
-    emit(LessonPlan(cardColorList, currentDayPlan, whichDayIsActive,
-        lessonPlanOrChangePlan));
+    emit(LessonPlan(lessonPlanDaysAndHours, cardColorList, currentDayPlan,
+        whichDayIsActive, lessonPlanOrChangePlan));
   }
 
   void changePlanLayout(int index, bool lessonPlanOrChangePlan) {
