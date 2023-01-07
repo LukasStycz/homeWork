@@ -1,0 +1,51 @@
+{
+    "firstString": "Homework",
+    "@firstString": {
+      "description": "The title of application"
+    },
+    "secondString": "Add homework",
+    "@secondString": {
+      "description": "Adding homework"
+    },
+    "thirdString": "Homework list",
+    "@thirdString": {
+      "description": "Description of the homework list page"
+    },
+    "fourthString": "Mon",
+    "@fourthString": {
+      "description": "Description of the first tile of the lesson plan page"
+    },
+    "fifthString": "Tue",
+    "@fifthString": {
+      "description": "Description of the second tile of the lesson plan page"
+    },
+    "sixthString": "Wed",
+    "@sixthString": {
+      "description": "Description of the third tile of the lesson plan page"
+    },
+    "seventhString": "Thu",
+    "@seventhString": {
+      "description": "Description of the fourth tile of the lesson plan page"
+    },
+    "eighthString": "Fri",
+    "@eighthString": {
+      "description": "Description of the fifth tile of the lesson plan page"
+    },
+    "ninthString": "Les",
+    "@ninthString": {
+      "description": "Description of the sixth tile of the lesson plan page"
+    },
+    "tenthString": "Lesson",
+    "@tenthString": {
+      "description": "Description of where the new lesson plan is saved"
+    },
+    "eleventhString": "Undo changes?",
+    "@eleventhString": {
+      "description": "Description of the SnackBar, which is used to undo changes in the lesson plan"
+    },
+    "twelfthString": "Undo",
+    "@twelfthString": {
+      "description": "Description of the button for undoing changes in the lesson plan"
+    }
+
+}
