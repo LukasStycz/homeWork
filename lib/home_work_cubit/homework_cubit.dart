@@ -75,10 +75,10 @@ class HomeworkCubit extends Cubit<HomeworkState> {
       homeWorkList.add(lessonName);
     }
   }
-}
 
-bool isNotWeekend(int timeNow) {
-  return timeNow <= 5;
+  bool isNotWeekend(int timeNow) {
+    return timeNow <= 5;
+  }
 }
 
 const int noSuchLesson = 500;

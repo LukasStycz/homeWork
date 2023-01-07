@@ -147,7 +147,7 @@ class HomeWorkListLayout extends StatelessWidget {
                   ),
                   Text(
                     homeWorks.elementAt(index),
-                    style: const TextStyle(fontSize: 30, color: Colors.red),
+                    style: const TextStyle(fontSize: 30, color: Colors.white),
                   ),
                 ],
               ),
@@ -289,15 +289,32 @@ class LessonPlanPage extends StatelessWidget {
           foregroundColor: Colors.white,
           onPressed: () {
             bool activateOrDeactivateDaysAndHoursGestureDetector =
-                activationOrDeactivationDaysAndHoursGestureDetector(
+            context.read<LessonPlanCubit>().activationOrDeactivationDaysAndHoursGestureDetector(
               lessonPlanOrChangePlan,
               _controller,
               whichDayIsActive,
+              currentDayPlan,
             );
             context.read<LessonPlanCubit>().changePlanLayout(
                   whichDayIsActive,
                   activateOrDeactivateDaysAndHoursGestureDetector,
                 );
+            if (lessonPlanOrChangePlan == false) {
+              final snackBar = SnackBar(
+                content: const Text('Cofnij zmiany'),
+                action: SnackBarAction(
+                  label: 'Cofnij',
+                  onPressed: () {
+                    context.read<LessonPlanCubit>().undoSetNewPlan();
+                    context.read<LessonPlanCubit>().changePlanLayout(
+                      whichDayIsActive,
+                      activateOrDeactivateDaysAndHoursGestureDetector,
+                    );
+                  },
+                ),
+              );
+              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+            }
             print(whichDayIsActive);
           },
           child:
@@ -335,7 +352,7 @@ Widget _pagesHomeWorkListPage(state) {
           'Lista Zadań Domowych',
           textAlign: TextAlign.center,
           overflow: TextOverflow.ellipsis,
-          style: TextStyle(fontSize: 30, color: Colors.red),
+          style: TextStyle(fontSize: 30, color: Colors.indigoAccent),
         ),
       ),
       Flexible(
@@ -386,7 +403,7 @@ Widget _lessonPlanOrLessonHoursShowOrChange(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
       child: TextFormField(
         controller: controller[index],
-        style: const TextStyle(fontSize: 20, color: Colors.red),
+        style: const TextStyle(fontSize: 20, color: Colors.white),
         decoration: InputDecoration(
           border: const UnderlineInputBorder(),
           hintText: '${index + 1} Lekcja',
@@ -401,7 +418,7 @@ Widget _lessonPlanOrLessonHoursShowOrChange(
         ),
         Text(
           currentDayPlan.elementAt(index),
-          style: const TextStyle(fontSize: 30, color: Colors.red),
+          style: const TextStyle(fontSize: 30, color: Colors.white),
         ),
       ],
     );

@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 part 'lessonplan_state.dart';
 
 class LessonPlanCubit extends Cubit<LessonPlanState> {
   LessonPlanCubit() : super(const LessonPlanInitial()) {
     _loadHours(initialValueFirstParameter, initialValueSecondParameter);
   }
+  int _whichDayIsActiveForUndoSetNewPlan =
+      initialValueOfWhichDayIsActiveForUndoSetNewPlan;
+  List<String> _lessonPlanListForUndoSetNewPlan =
+      initialValueOfLessonPlanListForUndoSetNewPlan;
+
   Future<void> _loadDays(bool lessonPlanOrChangePlan, int index) async {
     final int whichDayIsActive = index;
     final prefs = await SharedPreferences.getInstance();
@@ -59,9 +63,53 @@ class LessonPlanCubit extends Cubit<LessonPlanState> {
       [Colors.black26, Colors.indigoAccent],
     ];
 
-    cardColorList.insert(whichDayIsActive, [Colors.indigoAccent, Colors.black]);
+    cardColorList.insert(whichDayIsActive, [Colors.indigoAccent, Colors.white]);
 
     return cardColorList;
+  }
+
+  bool activationOrDeactivationDaysAndHoursGestureDetector(
+    lessonPlanOrChangePlan,
+    List<TextEditingController> controller,
+    int whichDayIsActive,
+    List<String> currentDayPlan,
+  ) {
+    if (lessonPlanOrChangePlan == true) {
+      return false;
+    } else {
+      _lessonPlanListForUndoSetNewPlan = currentDayPlan;
+      _whichDayIsActiveForUndoSetNewPlan = whichDayIsActive;
+      List<String> newPlan = [];
+      for (int i = 0; i <= 7; i++) {
+        newPlan.add(controller[i].text);
+        _setNewPlan(
+          newPlan,
+          whichDayIsActive,
+        );
+      }
+      print(newPlan);
+      return true;
+    }
+  }
+
+  Future<void> undoSetNewPlan() async {
+    if ((_lessonPlanListForUndoSetNewPlan !=
+            initialValueOfLessonPlanListForUndoSetNewPlan) &&
+        (_whichDayIsActiveForUndoSetNewPlan !=
+            initialValueOfWhichDayIsActiveForUndoSetNewPlan)) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setStringList(
+          lessonPlanKeys[_whichDayIsActiveForUndoSetNewPlan],
+          _lessonPlanListForUndoSetNewPlan);
+    }
+  }
+
+  Future<void> _setNewPlan(
+    List<String> newPlan,
+    int whichDayIsActive,
+  ) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList(lessonPlanKeys[whichDayIsActive], newPlan);
   }
 }
 
@@ -72,6 +120,7 @@ const List<String> lessonPlanKeys = [
   'thursday',
   'friday',
 ];
+
 const List<String> defaultLessonPlan = [
   'a',
   'b',
@@ -102,33 +151,11 @@ const List<double> lessonHours = [
   15.20,
   15.50,
 ];
-bool activationOrDeactivationDaysAndHoursGestureDetector(
-  lessonPlanOrChangePlan,
-  List<TextEditingController> controller,
-  int whichDayIsActive,
-) {
-  if (lessonPlanOrChangePlan == true) {
-    return false;
-  } else {
-    List<String> newPlan = [];
-    for (int i = 0; i <= 7; i++) {
-      newPlan.add(controller[i].text);
-      setNewPlan(
-        newPlan,
-        whichDayIsActive,
-      );
-    }
-    print(newPlan);
-    return true;
-  }
-}
 
-Future<void> setNewPlan(
-  List<String> newPlan,
-  int whichDayIsActive,
-) async {
-  final prefs = await SharedPreferences.getInstance();
-  await prefs.setStringList(lessonPlanKeys[whichDayIsActive], newPlan);
-}
 const bool initialValueFirstParameter = true;
-const int initialValueSecondParameter =5;
+
+const int initialValueSecondParameter = 5;
+
+const int initialValueOfWhichDayIsActiveForUndoSetNewPlan = 100;
+
+const List<String> initialValueOfLessonPlanListForUndoSetNewPlan = [];
