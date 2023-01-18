@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'colors.dart';
+import 'dimens.dart';
 import 'lesson_plan-cubit/lessonplan_cubit.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'constObjects.dart';
@@ -23,7 +25,7 @@ class PagesLessonPlanPage extends StatelessWidget {
             currentDayPlan: state.currentDayPlan,
             cardColorList: state.cardColorList,
             whichDayIsActive: state.whichDayIsActive,
-            lessonPlanOrChangePlan: state.lessonPlanOrChangePlan,
+            isTilesClickable: state.isTilesClickable,
           );
         } else {
           return ConstObjects.circularProgressIndicator;
@@ -39,7 +41,7 @@ class _LessonPlanPage extends StatelessWidget {
       required this.currentDayPlan,
       required this.cardColorList,
       required this.whichDayIsActive,
-      required this.lessonPlanOrChangePlan,
+      required this.isTilesClickable,
       required this.lessonPlanDaysAndHours,
       Key? key})
       : super(key: key);
@@ -55,16 +57,16 @@ class _LessonPlanPage extends StatelessWidget {
   ];
   final AppLocalizations localizations;
   final List<String> lessonPlanDaysAndHours;
-  final bool lessonPlanOrChangePlan;
+  final bool isTilesClickable;
   final List<String> currentDayPlan;
-  final List<List<Color>> cardColorList;
+  final List<CardColors> cardColorList;
   final int whichDayIsActive;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        ConstObjects. sizedBoxTwentyHeight,
+        ConstObjects.sizedBoxTwentyHeight,
         _changingDaysAndHoursTilesAndChangingPlanButton(context),
         ConstObjects.sizedBoxTwentyHeight,
         _lessonPlanAndHoursView(),
@@ -77,35 +79,42 @@ class _LessonPlanPage extends StatelessWidget {
       children: [
         Flexible(
           child: SizedBox(
-            height: 40,
+            height: AppDimens.heightOrWidthSmall,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: lessonPlanDaysAndHours.length,
-              itemBuilder: (BuildContext context, int index) {
+              itemBuilder: (
+                BuildContext context,
+                int index,
+              ) {
                 return GestureDetector(
                   onTap: () {
-                    if (lessonPlanOrChangePlan == true) {
-                      context
-                          .read<LessonPlanCubit>()
-                          .changePlanLayout(index, lessonPlanOrChangePlan);
+                    if (isTilesClickable == true) {
+                      context.read<LessonPlanCubit>().changePlanLayout(
+                            index,
+                            isTilesClickable,
+                          );
                     }
                   },
                   child: Container(
-                    margin: const EdgeInsets.only(left: 4),
-                    width: 40,
+                    margin: const EdgeInsets.only(left: AppDimens.insetsSmall),
+                    width: AppDimens.heightOrWidthSmall,
                     decoration: BoxDecoration(
-                      color: cardColorList[index][0],
-                      borderRadius: ConstObjects. listListBackgroundAndTilesBorderRadius,
+                      color: cardColorList[index].tilesBackgroundColor,
+                      borderRadius: ConstObjects.listAndTilesBorderRadius,
                     ),
                     child: Column(
                       children: [
-                        ConstObjects.sizedBoxTwelveHeight,
-                        Text(
-                          lessonPlanDaysAndHours[index],
-                          style: TextStyle(
-                              fontSize: 16,
-                              color: cardColorList[index][1],
-                              fontWeight: FontWeight.bold),
+                        Padding(
+                          padding: ConstObjects.paddingTopTwelve,
+                          child: Text(
+                            lessonPlanDaysAndHours[index],
+                            style: TextStyle(
+                              fontSize: AppDimens.fontSmall,
+                              color: cardColorList[index].tilesTextColor,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -116,9 +125,6 @@ class _LessonPlanPage extends StatelessWidget {
           ),
         ),
         _changeLessonPlanButton(context),
-        const SizedBox(
-          width: 4,
-        )
       ],
     );
   }
@@ -128,20 +134,22 @@ class _LessonPlanPage extends StatelessWidget {
       child: Container(
         width: double.infinity,
         decoration: const BoxDecoration(
-            borderRadius:  ConstObjects.listListBackgroundAndTilesBorderRadius,
-            color: Colors.indigoAccent,
+            borderRadius: ConstObjects.listBackgroundBorderRadius,
+            color: AppColors.tilesTextAndAppBackgroundColor,
             boxShadow: [
               ConstObjects.listBackgroundBoxShadow,
             ]),
         child: ListView.builder(
-            itemBuilder: (BuildContext context, int index) {
+            itemBuilder: (
+              BuildContext context,
+              int index,
+            ) {
               return Container(
-                margin:  ConstObjects.listContainerMargin,
-                height: 60,
-                width: 52,
+                margin: ConstObjects.listContainerMargin,
+                height: AppDimens.heightOrWidthBig,
                 decoration: const BoxDecoration(
-                  color: Colors.black26,
-                  borderRadius: ConstObjects.listListBackgroundAndTilesBorderRadius,
+                  color: AppColors.listAndTilesBackgroundColor,
+                  borderRadius: ConstObjects.listAndTilesBorderRadius,
                 ),
                 child: _lessonPlanOrLessonHoursShowOrChange(
                   index,
@@ -157,45 +165,41 @@ class _LessonPlanPage extends StatelessWidget {
     BuildContext context,
   ) {
     if (whichDayIsActive != 5) {
-      return FloatingActionButton.small(
-          backgroundColor: Colors.indigoAccent,
-          foregroundColor: Colors.white,
-          onPressed: () {
-            bool activateOrDeactivateDaysAndHoursGestureDetector = context
-                .read<LessonPlanCubit>()
-                .activationOrDeactivationDaysAndHoursGestureDetector(
-                  lessonPlanOrChangePlan,
-                  _controller,
-                  whichDayIsActive,
-                  currentDayPlan,
+      return Padding(
+        padding: const EdgeInsets.only(right: AppDimens.insetsSmall),
+        child: FloatingActionButton.small(
+            backgroundColor: AppColors.tilesTextAndAppBackgroundColor,
+            foregroundColor: AppColors.scaffoldIconAndTextColor,
+            onPressed: () {
+              bool  clickableTilesSwitch =
+                  context.read<LessonPlanCubit>(). clickableTilesSwitch(
+                        isTilesClickable,
+                        _controller,
+                        whichDayIsActive,
+                        currentDayPlan,
+                      );
+              if (isTilesClickable == false) {
+                final snackBar = SnackBar(
+                  content: Text(localizations.undoChanges),
+                  action: SnackBarAction(
+                    label: localizations.undo,
+                    onPressed: () {
+                      context.read<LessonPlanCubit>().undoSetNewPlan(
+                            whichDayIsActive,
+                        clickableTilesSwitch,
+                          );
+                    },
+                  ),
                 );
-            context.read<LessonPlanCubit>().changePlanLayout(
-                  whichDayIsActive,
-                  activateOrDeactivateDaysAndHoursGestureDetector,
-                );
-            if (lessonPlanOrChangePlan == false) {
-              final snackBar = SnackBar(
-                content: Text(localizations.undoChanges),
-                action: SnackBarAction(
-                  label: localizations.undo,
-                  onPressed: () {
-                    context.read<LessonPlanCubit>().undoSetNewPlan();
-                    context.read<LessonPlanCubit>().changePlanLayout(
-                          whichDayIsActive,
-                          activateOrDeactivateDaysAndHoursGestureDetector,
-                        );
-                  },
-                ),
-              );
-              ScaffoldMessenger.of(context).showSnackBar(snackBar);
-            }
-            print(whichDayIsActive);
-          },
-          child:
-              _LoadOrSaveIcon(lessonPlanOrChangePlan: lessonPlanOrChangePlan));
+                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              }
+              print(whichDayIsActive);
+            },
+            child: _LoadOrSaveIcon(isTilesClickable: isTilesClickable)),
+      );
     } else {
       return const SizedBox(
-        height: 48,
+        height: AppDimens.heightOrWidthMedium,
       );
     }
   }
@@ -203,12 +207,17 @@ class _LessonPlanPage extends StatelessWidget {
   Widget _lessonPlanOrLessonHoursShowOrChange(
     int index,
   ) {
-    if ((lessonPlanOrChangePlan == false) && (whichDayIsActive != 5)) {
+    if ((isTilesClickable == false) && (whichDayIsActive != 5)) {
       return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppDimens.insetsMedium,
+          vertical: AppDimens.insetsBig,
+        ),
         child: TextFormField(
           controller: _controller[index],
-          style: const TextStyle(fontSize: 20, color: Colors.white),
+          style: const TextStyle(
+              fontSize: AppDimens.fontMedium,
+              color: AppColors.scaffoldIconAndTextColor),
           decoration: InputDecoration(
             border: const UnderlineInputBorder(),
             hintText: '${index + 1}${localizations.lesson}',
@@ -216,27 +225,24 @@ class _LessonPlanPage extends StatelessWidget {
         ),
       );
     } else {
-      return Column(
-        children: [
-          ConstObjects.sizedBoxTwelveHeight,
-          Text(
-            currentDayPlan.elementAt(index),
-            style: ConstObjects.listTextStyle,
-          ),
-        ],
+      return Center(
+        child: Text(
+          currentDayPlan.elementAt(index),
+          style: ConstObjects.listTextStyle,
+        ),
       );
     }
   }
 }
 
 class _LoadOrSaveIcon extends StatelessWidget {
-  const _LoadOrSaveIcon({required this.lessonPlanOrChangePlan, Key? key})
+  const _LoadOrSaveIcon({required this.isTilesClickable, Key? key})
       : super(key: key);
-  final bool lessonPlanOrChangePlan;
+  final bool isTilesClickable;
 
   @override
   Widget build(BuildContext context) {
-    if (lessonPlanOrChangePlan == true) {
+    if (isTilesClickable == true) {
       return const Icon(Icons.change_circle_outlined);
     } else {
       return const Icon(Icons.save_outlined);

@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:homeworkapp/home_work_cubit/homework_cubit.dart';
-import 'package:homeworkapp/pagesHomeWorkListPage.dart';
-import 'package:homeworkapp/pagesLessonPlanPage.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
 import 'constObjects.dart';
+import 'home_work_cubit/homework_cubit.dart';
+import 'pagesHomeWorkListPage.dart';
+import 'pagesLessonPlanPage.dart';
+import 'colors.dart';
+import 'dimens.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -22,14 +23,14 @@ Widget widgetForCreatingVariableLocalizations(BuildContext context) {
   return DefaultTabController(
     length: ConstObjects.tabLength,
     child: Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.scaffoldIconAndTextColor,
       appBar: AppBar(
-        foregroundColor: Colors.white,
-        backgroundColor: Colors.indigoAccent,
+        foregroundColor: AppColors.scaffoldIconAndTextColor,
+        backgroundColor: AppColors.tilesTextAndAppBackgroundColor,
         title: Text(localizations.homework),
         bottom: const TabBar(
-          indicatorColor: Colors.white,
-          indicatorWeight: 4,
+          indicatorColor: AppColors.scaffoldIconAndTextColor,
+          indicatorWeight: AppDimens.insetsSmall,
           isScrollable: true,
           tabs: [
             _Tabs(icon: Icons.playlist_add_outlined),
@@ -51,8 +52,8 @@ class _Tabs extends StatelessWidget {
     return Tab(
       icon: Icon(
         icon,
-        color: Colors.white,
-        size: 52,
+        color: AppColors.scaffoldIconAndTextColor,
+        size: AppDimens.tabIconSize,
       ),
     );
   }
@@ -73,13 +74,13 @@ class _Pages extends StatelessWidget {
           Scaffold(
             floatingActionButtonLocation:
                 FloatingActionButtonLocation.centerTop,
-            backgroundColor: Colors.white,
+            backgroundColor: AppColors.scaffoldIconAndTextColor,
             floatingActionButton: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 FloatingActionButton.extended(
-                  backgroundColor: Colors.indigoAccent,
-                  foregroundColor: Colors.white,
+                  backgroundColor: AppColors.tilesTextAndAppBackgroundColor,
+                  foregroundColor: AppColors.scaffoldIconAndTextColor,
                   onPressed: () {
                     context.read<HomeworkCubit>().addNewHomeWorkIfNeeded();
                   },

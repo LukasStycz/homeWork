@@ -10,9 +10,9 @@ class LessonPlanInitial extends LessonPlanState {
 }
 
 class LessonPlan extends LessonPlanState {
-  final bool lessonPlanOrChangePlan;
+  final bool isTilesClickable;
   final int whichDayIsActive;
-  final List<List<Color>> cardColorList;
+  final List<CardColors> cardColorList;
   final List<String> currentDayPlan;
   final List<String> lessonPlanDaysAndHours;
   final AppLocalizations localizations;
@@ -22,7 +22,7 @@ class LessonPlan extends LessonPlanState {
     this.cardColorList,
     this.currentDayPlan,
     this.whichDayIsActive,
-    this.lessonPlanOrChangePlan,
+    this.isTilesClickable,
   );
 
   @override
@@ -30,7 +30,7 @@ class LessonPlan extends LessonPlanState {
       identical(this, other) ||
       other is LessonPlan &&
           runtimeType == other.runtimeType &&
-          lessonPlanOrChangePlan == other.lessonPlanOrChangePlan &&
+          isTilesClickable == other.isTilesClickable &&
           whichDayIsActive == other.whichDayIsActive &&
           cardColorList == other.cardColorList &&
           currentDayPlan == other.currentDayPlan &&
@@ -39,7 +39,7 @@ class LessonPlan extends LessonPlanState {
 
   @override
   int get hashCode =>
-      lessonPlanOrChangePlan.hashCode ^
+      isTilesClickable.hashCode ^
       whichDayIsActive.hashCode ^
       cardColorList.hashCode ^
       currentDayPlan.hashCode ^

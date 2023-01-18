@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:homeworkapp/home_page.dart';
-import 'package:homeworkapp/home_work_cubit/homework_cubit.dart';
+import 'constObjects.dart';
+import 'home_page.dart';
+import 'home_work_cubit/homework_cubit.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -22,7 +23,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Czitus Demo',
+      title: ConstObjects.title,
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -53,16 +54,5 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
-
-
-
-List<Color> _loadCardColorList(int whichDayIsActive, int iterator) {
-    if (iterator!=whichDayIsActive){
-     return [Colors.black26, Colors.indigoAccent];
-    }else{
-      return [Colors.indigoAccent, Colors.white];
-    }
-  }
 
 

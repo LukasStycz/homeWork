@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:homeworkapp/colors.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
 part 'lessonplan_state.dart';
 
 class LessonPlanCubit extends Cubit<LessonPlanState> {
@@ -15,84 +16,129 @@ class LessonPlanCubit extends Cubit<LessonPlanState> {
       localizations.friday,
       localizations.lessons,
     ];
-    _loadHours(initialValueFirstParameter, initialValueSecondParameter);
+    _loadHours(
+      _initialValueIsTilesClickable,
+      _initialValueWhichDayIsActive,
+    );
   }
   final AppLocalizations localizations;
   List<String> lessonPlanDaysAndHours = [];
   int _whichDayIsActiveForUndoSetNewPlan =
-      initialValueOfWhichDayIsActiveForUndoSetNewPlan;
+      _initialValueOfWhichDayIsActiveForUndoSetNewPlan;
   List<String> _lessonPlanListForUndoSetNewPlan =
-      initialValueOfLessonPlanListForUndoSetNewPlan;
+      _initialValueOfLessonPlanListForUndoSetNewPlan;
 
-  Future<void> _loadDays(bool lessonPlanOrChangePlan, int index) async {
-    final int whichDayIsActive = index;
+  Future<void> _loadDays(
+    bool isTilesClickable,
+    int whichDayIsActive,
+  ) async {
     final prefs = await SharedPreferences.getInstance();
     final List<String> currentDayPlan =
         prefs.getStringList(lessonPlanKeys[whichDayIsActive]) ??
             defaultLessonPlan;
-    final List<List<Color>> cardColorList =
-        _loadCardColorList(whichDayIsActive);
-    emit(LessonPlan(localizations, lessonPlanDaysAndHours, cardColorList,
-        currentDayPlan, whichDayIsActive, lessonPlanOrChangePlan));
+    final List<CardColors> cardColorList = _loadCardColorList(whichDayIsActive);
+    emit(LessonPlan(
+      localizations,
+      lessonPlanDaysAndHours,
+      cardColorList,
+      currentDayPlan,
+      whichDayIsActive,
+      isTilesClickable,
+    ));
   }
 
-  void _loadHours(bool lessonPlanOrChangePlan, int index) {
-    final int whichDayIsActive = index;
+  void _loadHours(
+    bool isTilesClickable,
+    int whichDayIsActive,
+  ) {
     final List<String> currentDayPlan = [
-      '${lessonHours[0].hour}.${lessonHours[0].minute}-${lessonHours[1].hour}.${lessonHours[1].minute}',
-      '${lessonHours[2].hour}.${lessonHours[2].minute}-${lessonHours[3].hour}.${lessonHours[3].minute}',
-      '${lessonHours[4].hour}.${lessonHours[4].minute}-${lessonHours[5].hour}.${lessonHours[5].minute}',
+      '${_hourFormat.format(lessonHours[0].hour)}.${_hourFormat.format(lessonHours[0].minute)}-${_hourFormat.format(lessonHours[1].hour)}.${lessonHours[1].minute}',
+      '${_hourFormat.format(lessonHours[2].hour)}.${lessonHours[2].minute}-${_hourFormat.format(lessonHours[3].hour)}.${lessonHours[3].minute}',
+      '${_hourFormat.format(lessonHours[4].hour)}.${lessonHours[4].minute}-${lessonHours[5].hour}.${lessonHours[5].minute}',
       '${lessonHours[6].hour}.${lessonHours[6].minute}-${lessonHours[7].hour}.${lessonHours[7].minute}',
       '${lessonHours[8].hour}.${lessonHours[8].minute}-${lessonHours[9].hour}.${lessonHours[9].minute}',
       '${lessonHours[10].hour}.${lessonHours[10].minute}-${lessonHours[11].hour}.${lessonHours[11].minute}',
       '${lessonHours[12].hour}.${lessonHours[12].minute}-${lessonHours[13].hour}.${lessonHours[13].minute}',
       '${lessonHours[14].hour}.${lessonHours[14].minute}-${lessonHours[15].hour}.${lessonHours[15].minute}',
     ];
-    final List<List<Color>> cardColorList =
-        _loadCardColorList(whichDayIsActive);
-
-    emit(LessonPlan(localizations, lessonPlanDaysAndHours, cardColorList,
-        currentDayPlan, whichDayIsActive, lessonPlanOrChangePlan));
+    final List<CardColors> cardColorList = _loadCardColorList(whichDayIsActive);
+    emit(LessonPlan(
+      localizations,
+      lessonPlanDaysAndHours,
+      cardColorList,
+      currentDayPlan,
+      whichDayIsActive,
+      isTilesClickable,
+    ));
   }
 
-  void changePlanLayout(int index, bool lessonPlanOrChangePlan) {
-    if (index == 5) {
-      _loadHours(lessonPlanOrChangePlan, index);
-      print('dzień$index');
+  void changePlanLayout(
+    int whichDayIsActive,
+    bool isTilesClickable,
+  ) {
+    if (whichDayIsActive == 5) {
+      _loadHours(
+        isTilesClickable,
+        whichDayIsActive,
+      );
+      print('dzień$whichDayIsActive');
     } else {
-      _loadDays(lessonPlanOrChangePlan, index);
-      print('dzień$index');
+      _loadDays(
+        isTilesClickable,
+        whichDayIsActive,
+      );
+      print('dzień$whichDayIsActive');
     }
   }
 
-  List<List<Color>> _loadCardColorList(int whichDayIsActive) {
-    List<List<Color>> cardColorList = [
-      [Colors.black26, Colors.indigoAccent],
-      [Colors.black26, Colors.indigoAccent],
-      [Colors.black26, Colors.indigoAccent],
-      [Colors.black26, Colors.indigoAccent],
-      [Colors.black26, Colors.indigoAccent],
-      [Colors.black26, Colors.indigoAccent],
+  List<CardColors> _loadCardColorList(int whichDayIsActive) {
+    List<CardColors> cardColorList = [
+      const CardColors(
+          tilesBackgroundColor: AppColors.listAndTilesBackgroundColor,
+          tilesTextColor: AppColors.tilesTextAndAppBackgroundColor),
+      const CardColors(
+          tilesBackgroundColor: AppColors.listAndTilesBackgroundColor,
+          tilesTextColor: AppColors.tilesTextAndAppBackgroundColor),
+      const CardColors(
+          tilesBackgroundColor: AppColors.listAndTilesBackgroundColor,
+          tilesTextColor: AppColors.tilesTextAndAppBackgroundColor),
+      const CardColors(
+          tilesBackgroundColor: AppColors.listAndTilesBackgroundColor,
+          tilesTextColor: AppColors.tilesTextAndAppBackgroundColor),
+      const CardColors(
+          tilesBackgroundColor: AppColors.listAndTilesBackgroundColor,
+          tilesTextColor: AppColors.tilesTextAndAppBackgroundColor),
+      const CardColors(
+          tilesBackgroundColor: AppColors.listAndTilesBackgroundColor,
+          tilesTextColor: AppColors.tilesTextAndAppBackgroundColor),
     ];
-
-    cardColorList.insert(whichDayIsActive, [Colors.indigoAccent, Colors.white]);
-
+    cardColorList.insert(
+      whichDayIsActive,
+      const CardColors(
+        tilesBackgroundColor: AppColors.tilesTextAndAppBackgroundColor,
+        tilesTextColor: AppColors.scaffoldIconAndTextColor,
+      ),
+    );
     return cardColorList;
   }
 
-  bool activationOrDeactivationDaysAndHoursGestureDetector(
-    lessonPlanOrChangePlan,
+  bool  clickableTilesSwitch(
+    isTilesClickable,
     List<TextEditingController> controller,
     int whichDayIsActive,
     List<String> currentDayPlan,
   ) {
-    if (lessonPlanOrChangePlan == true) {
-      return false;
+    final bool clickableTiles = isTilesClickable == true;
+    const bool notClickableTiles = false;
+    const bool redoClickableTiles = true;
+    if (clickableTiles) {
+      changePlanLayout(whichDayIsActive,notClickableTiles);
+      return notClickableTiles;
     } else {
       _lessonPlanListForUndoSetNewPlan = currentDayPlan;
       _whichDayIsActiveForUndoSetNewPlan = whichDayIsActive;
       List<String> newPlan = [];
-      for (int i = 0; i <= 7; i++) {
+      for (int i = _currentListItem; i <= _listLength; i++) {
         newPlan.add(controller[i].text);
         _setNewPlan(
           newPlan,
@@ -100,19 +146,23 @@ class LessonPlanCubit extends Cubit<LessonPlanState> {
         );
       }
       print(newPlan);
-      return true;
+      changePlanLayout(whichDayIsActive,redoClickableTiles);
+      return redoClickableTiles;
     }
   }
 
-  Future<void> undoSetNewPlan() async {
-    if ((_lessonPlanListForUndoSetNewPlan !=
-            initialValueOfLessonPlanListForUndoSetNewPlan) &&
+  Future<void> undoSetNewPlan(whichDayIsActive,tilesClickableOrNot,) async {
+    final bool checkIfUndoIsNeeded = (_lessonPlanListForUndoSetNewPlan !=
+            _initialValueOfLessonPlanListForUndoSetNewPlan) &&
         (_whichDayIsActiveForUndoSetNewPlan !=
-            initialValueOfWhichDayIsActiveForUndoSetNewPlan)) {
+            _initialValueOfWhichDayIsActiveForUndoSetNewPlan);
+    if (checkIfUndoIsNeeded) {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setStringList(
-          lessonPlanKeys[_whichDayIsActiveForUndoSetNewPlan],
-          _lessonPlanListForUndoSetNewPlan);
+        lessonPlanKeys[_whichDayIsActiveForUndoSetNewPlan],
+        _lessonPlanListForUndoSetNewPlan,
+      );
+      changePlanLayout(whichDayIsActive,tilesClickableOrNot,);
     }
   }
 
@@ -121,7 +171,10 @@ class LessonPlanCubit extends Cubit<LessonPlanState> {
     int whichDayIsActive,
   ) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList(lessonPlanKeys[whichDayIsActive], newPlan);
+    await prefs.setStringList(
+      lessonPlanKeys[whichDayIsActive],
+      newPlan,
+    );
   }
 }
 
@@ -164,10 +217,10 @@ const List<TimeOfDay> lessonHours = [
   TimeOfDay(hour: 15, minute: 50),
 ];
 
-const bool initialValueFirstParameter = true;
-
-const int initialValueSecondParameter = 5;
-
-const int initialValueOfWhichDayIsActiveForUndoSetNewPlan = 100;
-
-const List<String> initialValueOfLessonPlanListForUndoSetNewPlan = [];
+const bool _initialValueIsTilesClickable = true;
+const int _initialValueWhichDayIsActive = 5;
+const int _initialValueOfWhichDayIsActiveForUndoSetNewPlan = 100;
+const List<String> _initialValueOfLessonPlanListForUndoSetNewPlan = [];
+NumberFormat _hourFormat = NumberFormat("00");
+const int _currentListItem =0;
+const int _listLength =7;

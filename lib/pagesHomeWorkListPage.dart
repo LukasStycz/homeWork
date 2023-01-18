@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:homeworkapp/home_work_cubit/homework_cubit.dart';
+import 'home_work_cubit/homework_cubit.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'colors.dart';
 import 'constObjects.dart';
+import 'dimens.dart';
 
 Widget pagesHomeWorkListPage(state, AppLocalizations localizations) {
   return Column(
     children: [
       Padding(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(AppDimens.insetsBig),
         child: Text(
           localizations.homeworkList,
           textAlign: TextAlign.center,
           overflow: TextOverflow.ellipsis,
-          style: const TextStyle(fontSize: 28, color: Colors.indigoAccent),
+          style: const TextStyle(
+              fontSize: AppDimens.fontBig,
+              color: AppColors.tilesTextAndAppBackgroundColor),
         ),
       ),
       Flexible(
@@ -39,8 +43,8 @@ class _HomeWorkListLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
-          color: Colors.indigoAccent,
-          borderRadius:ConstObjects.listListBackgroundAndTilesBorderRadius,
+          color: AppColors.tilesTextAndAppBackgroundColor,
+          borderRadius: ConstObjects.listBackgroundBorderRadius,
           boxShadow: [
             ConstObjects.listBackgroundBoxShadow,
           ]),
@@ -48,20 +52,16 @@ class _HomeWorkListLayout extends StatelessWidget {
           itemBuilder: (BuildContext context, int index) {
             return Container(
               margin: ConstObjects.listContainerMargin,
-              height: 60,
-              width: 52,
+              height: AppDimens.heightOrWidthBig,
               decoration: const BoxDecoration(
-                color: Colors.black26,
-                borderRadius:  ConstObjects.listListBackgroundAndTilesBorderRadius,
+                color: AppColors.listAndTilesBackgroundColor,
+                borderRadius: ConstObjects.listAndTilesBorderRadius,
               ),
-              child: Column(
-                children: [
-                  ConstObjects.sizedBoxTwelveHeight,
-                  Text(
-                    homeWorks.elementAt(index),
-                    style:  ConstObjects.listTextStyle,
-                  ),
-                ],
+              child: Center(
+                child: Text(
+                  homeWorks.elementAt(index),
+                  style: ConstObjects.listTextStyle,
+                ),
               ),
             );
           },

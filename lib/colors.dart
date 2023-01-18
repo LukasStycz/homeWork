@@ -9,8 +9,8 @@ class AppColors {
 class CardColors {
   const CardColors({
     required this.tilesBackgroundColor,
-    required this.tilesText,
+    required this.tilesTextColor,
   });
-  final Colors tilesText;
-  final Colors tilesBackgroundColor;
+  final Color tilesTextColor;
+  final Color tilesBackgroundColor;
 }
