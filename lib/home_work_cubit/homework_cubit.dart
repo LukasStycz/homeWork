@@ -52,21 +52,30 @@ class HomeworkCubit extends Cubit<HomeworkState> {
     int minute,
   ) {
     int lesson = noSuchLesson;
-    final double timeConversionToCompareWithLessonHours =
-        hour * 60 + minute * 60 / 100;
+    final int currentTimeInMinutes = hour * 60 + minute;
+    final int schoolBeginningTimeInMinutes =
+        lessonHours.first.hour * 60 + lessonHours.first.minute;
+    final int schoolEndingTimeInMinutes =
+        lessonHours.last.hour * 60 + lessonHours.last.minute;
 
-    if ((timeConversionToCompareWithLessonHours >= lessonHours.first * 60) &&
-        (timeConversionToCompareWithLessonHours < lessonHours.last * 60)) {
-      for (int i = 1; i <= 8; i++) {
-        if ((timeConversionToCompareWithLessonHours >=
-                lessonHours[i * 2 - 2] * 60) &&
-            (timeConversionToCompareWithLessonHours <
-                lessonHours[i * 2] * 60)) {
+    if ((currentTimeInMinutes >= schoolBeginningTimeInMinutes) &&
+        (currentTimeInMinutes < schoolEndingTimeInMinutes)) {
+      for (int i = 1; i <= numberOfLessonsSupportedByApp; i++) {
+        if ((currentTimeInMinutes >= lessonBeginningInMinutes(i)) &&
+            (currentTimeInMinutes < lessonEndingInMinutes(i))) {
           lesson = i;
         }
       }
     }
     return lesson;
+  }
+
+  int lessonBeginningInMinutes(int i) {
+    return lessonHours[i * 2 - 2].hour * 60 + lessonHours[i * 2 - 2].minute;
+  }
+
+  int lessonEndingInMinutes(int i) {
+    return lessonHours[i * 2].hour * 60 + lessonHours[i * 2].minute;
   }
 
   void _checkAndAddToListIfNeeded(String lessonName, List homeWorkList) {
@@ -75,12 +84,13 @@ class HomeworkCubit extends Cubit<HomeworkState> {
       homeWorkList.add(lessonName);
     }
   }
-
-  bool isNotWeekend(int timeNow) {
-    return timeNow <= 5;
-  }
 }
 
+bool isNotWeekend(int timeNow) {
+  return timeNow <= 5;
+}
+
+const int numberOfLessonsSupportedByApp = 8;
 const int noSuchLesson = 500;
 const String homeWorkKey = "HOME_WORK";
 const String dayOfHomeWorkListLastUpdateKey = "DAY_OF_LIST_UPDATE";

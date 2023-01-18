@@ -1,12 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 part 'lessonplan_state.dart';
 
 class LessonPlanCubit extends Cubit<LessonPlanState> {
-  LessonPlanCubit() : super(const LessonPlanInitial()) {
+  LessonPlanCubit(this.localizations) : super(const LessonPlanInitial()) {
+    lessonPlanDaysAndHours = [
+      localizations.monday,
+      localizations.tuesday,
+      localizations.wednesday,
+      localizations.thursday,
+      localizations.friday,
+      localizations.lessons,
+    ];
     _loadHours(initialValueFirstParameter, initialValueSecondParameter);
   }
+  final AppLocalizations localizations;
+  List<String> lessonPlanDaysAndHours = [];
   int _whichDayIsActiveForUndoSetNewPlan =
       initialValueOfWhichDayIsActiveForUndoSetNewPlan;
   List<String> _lessonPlanListForUndoSetNewPlan =
@@ -20,27 +32,27 @@ class LessonPlanCubit extends Cubit<LessonPlanState> {
             defaultLessonPlan;
     final List<List<Color>> cardColorList =
         _loadCardColorList(whichDayIsActive);
-    emit(LessonPlan(cardColorList, currentDayPlan, whichDayIsActive,
-        lessonPlanOrChangePlan));
+    emit(LessonPlan(localizations, lessonPlanDaysAndHours, cardColorList,
+        currentDayPlan, whichDayIsActive, lessonPlanOrChangePlan));
   }
 
   void _loadHours(bool lessonPlanOrChangePlan, int index) {
     final int whichDayIsActive = index;
     final List<String> currentDayPlan = [
-      '${lessonHours[0].toStringAsFixed(2)}-${lessonHours[1].toStringAsFixed(2)}',
-      '${lessonHours[2].toStringAsFixed(2)}-${lessonHours[3].toStringAsFixed(2)}',
-      '${lessonHours[4].toStringAsFixed(2)}-${lessonHours[5].toStringAsFixed(2)}',
-      '${lessonHours[6].toStringAsFixed(2)}-${lessonHours[7].toStringAsFixed(2)}',
-      '${lessonHours[8].toStringAsFixed(2)}-${lessonHours[9].toStringAsFixed(2)}',
-      '${lessonHours[10].toStringAsFixed(2)}-${lessonHours[11].toStringAsFixed(2)}',
-      '${lessonHours[12].toStringAsFixed(2)}-${lessonHours[13].toStringAsFixed(2)}',
-      '${lessonHours[14].toStringAsFixed(2)}-${lessonHours[15].toStringAsFixed(2)}',
+      '${lessonHours[0].hour}.${lessonHours[0].minute}-${lessonHours[1].hour}.${lessonHours[1].minute}',
+      '${lessonHours[2].hour}.${lessonHours[2].minute}-${lessonHours[3].hour}.${lessonHours[3].minute}',
+      '${lessonHours[4].hour}.${lessonHours[4].minute}-${lessonHours[5].hour}.${lessonHours[5].minute}',
+      '${lessonHours[6].hour}.${lessonHours[6].minute}-${lessonHours[7].hour}.${lessonHours[7].minute}',
+      '${lessonHours[8].hour}.${lessonHours[8].minute}-${lessonHours[9].hour}.${lessonHours[9].minute}',
+      '${lessonHours[10].hour}.${lessonHours[10].minute}-${lessonHours[11].hour}.${lessonHours[11].minute}',
+      '${lessonHours[12].hour}.${lessonHours[12].minute}-${lessonHours[13].hour}.${lessonHours[13].minute}',
+      '${lessonHours[14].hour}.${lessonHours[14].minute}-${lessonHours[15].hour}.${lessonHours[15].minute}',
     ];
     final List<List<Color>> cardColorList =
         _loadCardColorList(whichDayIsActive);
 
-    emit(LessonPlan(cardColorList, currentDayPlan, whichDayIsActive,
-        lessonPlanOrChangePlan));
+    emit(LessonPlan(localizations, lessonPlanDaysAndHours, cardColorList,
+        currentDayPlan, whichDayIsActive, lessonPlanOrChangePlan));
   }
 
   void changePlanLayout(int index, bool lessonPlanOrChangePlan) {
@@ -132,24 +144,24 @@ const List<String> defaultLessonPlan = [
   'h',
 ];
 
-const List<double> lessonHours = [
-  8.00,
-  8.45,
-  8.55,
-  9.40,
-  9.50,
-  10.35,
-  10.45,
-  11.30,
-  11.45,
-  12.30,
-  12.45,
-  13.30,
-  13.40,
-  14.25,
-  14.35,
-  15.20,
-  15.50,
+const List<TimeOfDay> lessonHours = [
+  TimeOfDay(hour: 8, minute: 0),
+  TimeOfDay(hour: 8, minute: 45),
+  TimeOfDay(hour: 8, minute: 55),
+  TimeOfDay(hour: 9, minute: 40),
+  TimeOfDay(hour: 9, minute: 50),
+  TimeOfDay(hour: 10, minute: 35),
+  TimeOfDay(hour: 10, minute: 45),
+  TimeOfDay(hour: 11, minute: 30),
+  TimeOfDay(hour: 11, minute: 45),
+  TimeOfDay(hour: 12, minute: 30),
+  TimeOfDay(hour: 12, minute: 45),
+  TimeOfDay(hour: 13, minute: 30),
+  TimeOfDay(hour: 13, minute: 40),
+  TimeOfDay(hour: 14, minute: 25),
+  TimeOfDay(hour: 14, minute: 35),
+  TimeOfDay(hour: 15, minute: 20),
+  TimeOfDay(hour: 15, minute: 50),
 ];
 
 const bool initialValueFirstParameter = true;

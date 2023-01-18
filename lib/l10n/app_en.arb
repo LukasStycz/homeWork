@@ -1,50 +1,50 @@
 {
-    "firstString": "Homework",
-    "@firstString": {
+    "homework": "Homework",
+    "@homework": {
       "description": "The title of application"
     },
-    "secondString": "Add homework",
-    "@secondString": {
+    "addHomework": "Add homework",
+    "@addHomework": {
       "description": "Adding homework"
     },
-    "thirdString": "Homework list",
-    "@thirdString": {
+    "homeworkList": "Homework list",
+    "@homeworkList": {
       "description": "Description of the homework list page"
     },
-    "fourthString": "Mon",
-    "@fourthString": {
+    "monday": "Mon",
+    "@monday": {
       "description": "Description of the first tile of the lesson plan page"
     },
-    "fifthString": "Tue",
-    "@fifthString": {
+    "tuesday": "Tue",
+    "@tuesday": {
       "description": "Description of the second tile of the lesson plan page"
     },
-    "sixthString": "Wed",
-    "@sixthString": {
+    "wednesday": "Wed",
+    "@wednesday": {
       "description": "Description of the third tile of the lesson plan page"
     },
-    "seventhString": "Thu",
-    "@seventhString": {
+    "thursday": "Thu",
+    "@thursday": {
       "description": "Description of the fourth tile of the lesson plan page"
     },
-    "eighthString": "Fri",
-    "@eighthString": {
+    "friday": "Fri",
+    "@friday": {
       "description": "Description of the fifth tile of the lesson plan page"
     },
-    "ninthString": "Les",
-    "@ninthString": {
+    "lessons": "Les",
+    "@lessons": {
       "description": "Description of the sixth tile of the lesson plan page"
     },
-    "tenthString": "Lesson",
-    "@tenthString": {
+    "lesson": "Lesson",
+    "@lesson": {
       "description": "Description of where the new lesson plan is saved"
     },
-    "eleventhString": "Undo changes?",
-    "@eleventhString": {
+    "undoChanges": "Undo changes?",
+    "@undoChanges": {
       "description": "Description of the SnackBar, which is used to undo changes in the lesson plan"
     },
-    "twelfthString": "Undo",
-    "@twelfthString": {
+    "undo": "Undo",
+    "@undo": {
       "description": "Description of the button for undoing changes in the lesson plan"
     }
 

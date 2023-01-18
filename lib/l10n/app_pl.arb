@@ -1,14 +1,14 @@
 {
-    "firstString": "Praca domowa",
-    "secondString": "Dodaj pracę domową",
-    "thirdString": "Lista prac domowych",
-    "fourthString": "Pon",
-    "fifthString": "Wto",
-    "sixthString": "Śro",
-    "seventhString": "Czw",
-    "eighthString": "Pią",
-    "ninthString": "Lek",
-    "tenthString": "Lekcja",
-    "eleventhString": "Cofnąć zmiany?",
-    "twelfthString": "Cofnij"
+    "homework": "Praca domowa",
+    "addHomework": "Dodaj pracę domową",
+    "homeworkList": "Lista prac domowych",
+    "monday": "Pon",
+    "tuesday": "Wto",
+    "wednesday": "Śro",
+    "thursday": "Czw",
+    "friday": "Pią",
+    "lessons": "Lek",
+    "lesson": "Lekcja",
+    "undoChanges": "Cofnąć zmiany?",
+    "undo": "Cofnij"
  }

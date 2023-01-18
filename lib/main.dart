@@ -6,7 +6,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([
@@ -37,6 +36,16 @@ class MyApp extends StatelessWidget {
         Locale('en', ''),
         Locale('pl', ''),
       ],
+      localeListResolutionCallback: (
+        locale,
+        supportedLocales,
+      ) {
+        if (supportedLocales.any((locale) => false)) {
+          return supportedLocales.first;
+        } else {
+          return basicLocaleListResolution(locale, supportedLocales);
+        }
+      },
       home: BlocProvider(
         create: (context) => HomeworkCubit(),
         child: const HomePage(),
@@ -44,3 +53,16 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+
+
+
+List<Color> _loadCardColorList(int whichDayIsActive, int iterator) {
+    if (iterator!=whichDayIsActive){
+     return [Colors.black26, Colors.indigoAccent];
+    }else{
+      return [Colors.indigoAccent, Colors.white];
+    }
+  }
+
+

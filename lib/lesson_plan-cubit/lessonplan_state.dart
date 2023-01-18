@@ -14,9 +14,16 @@ class LessonPlan extends LessonPlanState {
   final int whichDayIsActive;
   final List<List<Color>> cardColorList;
   final List<String> currentDayPlan;
-
-  const LessonPlan(this.cardColorList, this.currentDayPlan,
-      this.whichDayIsActive, this.lessonPlanOrChangePlan);
+  final List<String> lessonPlanDaysAndHours;
+  final AppLocalizations localizations;
+  const LessonPlan(
+      this.localizations,
+    this.lessonPlanDaysAndHours,
+    this.cardColorList,
+    this.currentDayPlan,
+    this.whichDayIsActive,
+    this.lessonPlanOrChangePlan,
+  );
 
   @override
   bool operator ==(Object other) =>
@@ -26,12 +33,16 @@ class LessonPlan extends LessonPlanState {
           lessonPlanOrChangePlan == other.lessonPlanOrChangePlan &&
           whichDayIsActive == other.whichDayIsActive &&
           cardColorList == other.cardColorList &&
-          currentDayPlan == other.currentDayPlan;
+          currentDayPlan == other.currentDayPlan &&
+          lessonPlanDaysAndHours == other.lessonPlanDaysAndHours &&
+          localizations == other.localizations;
 
   @override
   int get hashCode =>
       lessonPlanOrChangePlan.hashCode ^
       whichDayIsActive.hashCode ^
       cardColorList.hashCode ^
-      currentDayPlan.hashCode;
+      currentDayPlan.hashCode ^
+      lessonPlanDaysAndHours.hashCode ^
+      localizations.hashCode;
 }
