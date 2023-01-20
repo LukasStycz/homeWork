@@ -24,9 +24,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: ConstObjects.title,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
       localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
@@ -54,5 +51,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
-

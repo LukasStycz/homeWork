@@ -75,19 +75,16 @@ class _Pages extends StatelessWidget {
             floatingActionButtonLocation:
                 FloatingActionButtonLocation.centerTop,
             backgroundColor: AppColors.scaffoldIconAndTextColor,
-            floatingActionButton: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                FloatingActionButton.extended(
-                  backgroundColor: AppColors.tilesTextAndAppBackgroundColor,
-                  foregroundColor: AppColors.scaffoldIconAndTextColor,
-                  onPressed: () {
-                    context.read<HomeworkCubit>().addNewHomeWorkIfNeeded();
-                  },
-                  label: Text(localizations.addHomework),
-                  icon: const Icon(Icons.add),
-                ),
-              ],
+            floatingActionButton: Center(
+              child: FloatingActionButton.extended(
+                backgroundColor: AppColors.tilesTextAndAppBackgroundColor,
+                foregroundColor: AppColors.scaffoldIconAndTextColor,
+                onPressed: () {
+                  context.read<HomeworkCubit>().addNewHomeWork();
+                },
+                label: Text(localizations.addHomework),
+                icon: const Icon(Icons.add),
+              ),
             ),
           ),
           pagesHomeWorkListPage(state, localizations),
@@ -97,8 +94,3 @@ class _Pages extends StatelessWidget {
     });
   }
 }
-
-
-
-
-

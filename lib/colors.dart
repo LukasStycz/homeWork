@@ -11,6 +11,9 @@ class CardColors {
     required this.tilesBackgroundColor,
     required this.tilesTextColor,
   });
+
   final Color tilesTextColor;
   final Color tilesBackgroundColor;
+
 }
+

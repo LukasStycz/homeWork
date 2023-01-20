@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:homeworkapp/lesson_plan-cubit/lessonplan_cubit.dart';
+import 'package:homeworkapp/constObjects.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 part 'homework_state.dart';
 
@@ -7,43 +7,47 @@ class HomeworkCubit extends Cubit<HomeworkState> {
   HomeworkCubit() : super(const HomeworkInitial()) {
     _updateHomeWorks();
   }
+  static const int _numberOfLessonsSupportedByApp = 7;
+  static const int _noSuchLesson = 500;
+  static const String _homeWorkKey = "HOME_WORK";
+  static const String _dayOfHomeWorkListLastUpdateKey = "DAY_OF_LIST_UPDATE";
+  static const int _firstLesson = 0;
+  static const int _minutesInHour = 60;
 
   Future<void> _updateHomeWorks() async {
     final timeNow = DateTime.now();
     final prefs = await SharedPreferences.getInstance();
-    final int dayOfHomeWorkListLastUpdate =
+    final int homeWorkListLastUpdateDay =
         prefs.getInt(_dayOfHomeWorkListLastUpdateKey) ?? 0;
-    if ((dayOfHomeWorkListLastUpdate != timeNow.weekday) &&
-        (_isNotWeekend(timeNow.weekday))) {
+    final bool isHomeWorksClearNeeded =
+        (homeWorkListLastUpdateDay != timeNow.weekday) &&
+            (_isNotWeekend(timeNow.weekday));
+    if (isHomeWorksClearNeeded) {
       await prefs.remove(_homeWorkKey);
-      final List<String> homeWorks = prefs.getStringList(_homeWorkKey) ?? [];
-      emit(HomeworkLoaded(homeWorks));
-      print("dzieje sie że lista się czyści");
-    } else {
-      final List<String> homeWorks = prefs.getStringList(_homeWorkKey) ?? [];
-      emit(HomeworkLoaded(homeWorks));
-      print('dzieje się że lista porzechodzi dalej');
     }
+    final List<String> homeWorks = prefs.getStringList(_homeWorkKey) ?? [];
+    emit(HomeworkLoaded(homeWorks));
   }
 
-  Future<void> addNewHomeWorkIfNeeded() async {
+  Future<void> addNewHomeWork() async {
     final timeNow = DateTime.now();
     final int lessonNumber = _getLessonNumber(
       timeNow.hour,
       timeNow.minute,
     );
-    if ((lessonNumber != _noSuchLesson) && (_isNotWeekend(timeNow.weekday))) {
+    final bool isAddNeeded =
+        (lessonNumber != _noSuchLesson) && (_isNotWeekend(timeNow.weekday));
+    if (isAddNeeded) {
       final prefs = await SharedPreferences.getInstance();
       final List<String> actualLessonPlan =
-          prefs.getStringList(lessonPlanKeys[timeNow.weekday - 1]) ??
-              defaultLessonPlan;
-      final homeWorkName = actualLessonPlan[lessonNumber - 1];
+          prefs.getStringList(ConstObjects.lessonPlanKeys[timeNow.weekday - 1]) ??
+              ConstObjects.defaultLessonPlan;
+      final homeWorkName = actualLessonPlan[lessonNumber];
       final List<String> homeWorkList = prefs.getStringList(_homeWorkKey) ?? [];
       await prefs.setInt(_dayOfHomeWorkListLastUpdateKey, timeNow.weekday);
       _checkAndAddToListIfNeeded(homeWorkName, homeWorkList);
       await prefs.setStringList(_homeWorkKey, homeWorkList);
       emit(HomeworkLoaded(homeWorkList));
-      print(homeWorkList);
     }
   }
 
@@ -51,35 +55,50 @@ class HomeworkCubit extends Cubit<HomeworkState> {
     int hour,
     int minute,
   ) {
-    int lesson = _noSuchLesson;
     final int currentTimeInMinutes = hour * _minutesInHour + minute;
-    final int schoolBeginningTimeInMinutes =
-        lessonHours.first.hour * _minutesInHour + lessonHours.first.minute;
-    final int schoolEndingTimeInMinutes =
-        lessonHours.last.hour * _minutesInHour + lessonHours.last.minute;
-    final bool isSchoolTime =
-        (currentTimeInMinutes >= schoolBeginningTimeInMinutes) &&
-            (currentTimeInMinutes < schoolEndingTimeInMinutes);
-    if (isSchoolTime) {
-      for (int i = _thisLesson; i <= _numberOfLessonsSupportedByApp; i++) {
-        final bool currentLesson =
-            (currentTimeInMinutes >= _lessonBeginningInMinutes(i)) &&
-                (currentTimeInMinutes < _lessonEndingInMinutes(i));
-        if (currentLesson) {
-          lesson = i;
+    int lesson = _noSuchLesson;
+    if (_isSchoolTime(currentTimeInMinutes)) {
+      for (int lessonIndex = _firstLesson; lessonIndex <= _numberOfLessonsSupportedByApp; lessonIndex++) {
+        if (_currentLesson(lessonIndex, currentTimeInMinutes)) {
+          print (lessonIndex);
+          lesson = lessonIndex;
         }
       }
     }
     return lesson;
   }
 
-  int _lessonBeginningInMinutes(int i) {
-    return lessonHours[i * 2 - 2].hour * _minutesInHour +
-        lessonHours[i * 2 - 2].minute;
+  bool _currentLesson(
+    int lesson,
+    int currentTimeInMinutes,
+  ) {
+    final bool currentLesson =
+        (currentTimeInMinutes >= _lessonBeginningInMinutes(lesson)) &&
+            (currentTimeInMinutes < _lessonEndingInMinutes(lesson));
+    return currentLesson;
   }
 
-  int _lessonEndingInMinutes(int i) {
-    return lessonHours[i * 2].hour * _minutesInHour + lessonHours[i * 2].minute;
+  bool _isSchoolTime(currentTimeInMinutes) {
+    final int schoolBeginningTimeInMinutes =
+        lessonHours.first.startTime.hour * _minutesInHour + lessonHours.first.startTime.minute;
+    final int endOfDay =
+        lessonHours.last.endTime.hour * _minutesInHour + lessonHours.last.endTime.hour;
+    final bool isSchoolTime =
+        (currentTimeInMinutes >= schoolBeginningTimeInMinutes) &&
+            (currentTimeInMinutes < endOfDay);
+    return isSchoolTime;
+  }
+
+  int _lessonBeginningInMinutes(int lesson) {
+    return lessonHours[lesson].startTime.hour *
+            _minutesInHour +
+        lessonHours[lesson].startTime.minute;
+  }
+
+  int _lessonEndingInMinutes(int lesson) {
+    return lessonHours[lesson+1].startTime.hour *
+        _minutesInHour +
+        lessonHours[lesson+1].startTime.minute;
   }
 
   void _checkAndAddToListIfNeeded(String lessonName, List homeWorkList) {
@@ -88,15 +107,8 @@ class HomeworkCubit extends Cubit<HomeworkState> {
       homeWorkList.add(lessonName);
     }
   }
-}
 
-bool _isNotWeekend(int timeNow) {
-  return timeNow <= 5;
+  bool _isNotWeekend(int timeNow) {
+    return timeNow <= 5;
+  }
 }
-
-const int _numberOfLessonsSupportedByApp = 8;
-const int _noSuchLesson = 500;
-const String _homeWorkKey = "HOME_WORK";
-const String _dayOfHomeWorkListLastUpdateKey = "DAY_OF_LIST_UPDATE";
-const int _thisLesson = 1;
-const int _minutesInHour = 60;

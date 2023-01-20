@@ -24,7 +24,7 @@ class PagesLessonPlanPage extends StatelessWidget {
             lessonPlanDaysAndHours: state.lessonPlanDaysAndHours,
             currentDayPlan: state.currentDayPlan,
             cardColorList: state.cardColorList,
-            whichDayIsActive: state.whichDayIsActive,
+            whichTileIsActive: state.whichTileIsActive,
             isTilesClickable: state.isTilesClickable,
           );
         } else {
@@ -40,7 +40,7 @@ class _LessonPlanPage extends StatelessWidget {
       {required this.localizations,
       required this.currentDayPlan,
       required this.cardColorList,
-      required this.whichDayIsActive,
+      required this.whichTileIsActive,
       required this.isTilesClickable,
       required this.lessonPlanDaysAndHours,
       Key? key})
@@ -60,7 +60,7 @@ class _LessonPlanPage extends StatelessWidget {
   final bool isTilesClickable;
   final List<String> currentDayPlan;
   final List<CardColors> cardColorList;
-  final int whichDayIsActive;
+  final int whichTileIsActive;
 
   @override
   Widget build(BuildContext context) {
@@ -87,39 +87,7 @@ class _LessonPlanPage extends StatelessWidget {
                 BuildContext context,
                 int index,
               ) {
-                return GestureDetector(
-                  onTap: () {
-                    if (isTilesClickable == true) {
-                      context.read<LessonPlanCubit>().changePlanLayout(
-                            index,
-                            isTilesClickable,
-                          );
-                    }
-                  },
-                  child: Container(
-                    margin: const EdgeInsets.only(left: AppDimens.insetsSmall),
-                    width: AppDimens.heightOrWidthSmall,
-                    decoration: BoxDecoration(
-                      color: cardColorList[index].tilesBackgroundColor,
-                      borderRadius: ConstObjects.listAndTilesBorderRadius,
-                    ),
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: ConstObjects.paddingTopTwelve,
-                          child: Text(
-                            lessonPlanDaysAndHours[index],
-                            style: TextStyle(
-                              fontSize: AppDimens.fontSmall,
-                              color: cardColorList[index].tilesTextColor,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
+                return _tiles(context,index);
               },
             ),
           ),
@@ -128,11 +96,45 @@ class _LessonPlanPage extends StatelessWidget {
       ],
     );
   }
+  Widget _tiles(BuildContext context, int index,){
+    return GestureDetector(
+      onTap: () {
+        if (isTilesClickable) {
+          context.read<LessonPlanCubit>().changePlanLayout(
+            index,
+            isTilesClickable,
+          );
+        }
+      },
+      child: Container(
+        margin: const EdgeInsets.only(left: AppDimens.insetsSmall),
+        width: AppDimens.heightOrWidthSmall,
+        decoration: BoxDecoration(
+          color: cardColorList[index].tilesBackgroundColor,
+          borderRadius: ConstObjects.listAndTilesBorderRadius,
+        ),
+        child: Column(
+          children: [
+            Padding(
+              padding: ConstObjects.paddingTopTwelve,
+              child: Text(
+                lessonPlanDaysAndHours[index],
+                style: TextStyle(
+                  fontSize: AppDimens.fontSmall,
+                  color: cardColorList[index].tilesTextColor,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   Widget _lessonPlanAndHoursView() {
     return Flexible(
       child: Container(
-        width: double.infinity,
         decoration: const BoxDecoration(
             borderRadius: ConstObjects.listBackgroundBorderRadius,
             color: AppColors.tilesTextAndAppBackgroundColor,
@@ -164,7 +166,7 @@ class _LessonPlanPage extends StatelessWidget {
   Widget _changeLessonPlanButton(
     BuildContext context,
   ) {
-    if (whichDayIsActive != 5) {
+    if (whichTileIsActive != ConstObjects.lessonTile) {
       return Padding(
         padding: const EdgeInsets.only(right: AppDimens.insetsSmall),
         child: FloatingActionButton.small(
@@ -172,10 +174,10 @@ class _LessonPlanPage extends StatelessWidget {
             foregroundColor: AppColors.scaffoldIconAndTextColor,
             onPressed: () {
               bool  clickableTilesSwitch =
-                  context.read<LessonPlanCubit>(). clickableTilesSwitch(
+                  context.read<LessonPlanCubit>().saveOrUndoSaveNewPlan(
                         isTilesClickable,
                         _controller,
-                        whichDayIsActive,
+                        whichTileIsActive,
                         currentDayPlan,
                       );
               if (isTilesClickable == false) {
@@ -185,7 +187,7 @@ class _LessonPlanPage extends StatelessWidget {
                     label: localizations.undo,
                     onPressed: () {
                       context.read<LessonPlanCubit>().undoSetNewPlan(
-                            whichDayIsActive,
+                            whichTileIsActive,
                         clickableTilesSwitch,
                           );
                     },
@@ -193,7 +195,7 @@ class _LessonPlanPage extends StatelessWidget {
                 );
                 ScaffoldMessenger.of(context).showSnackBar(snackBar);
               }
-              print(whichDayIsActive);
+              print(whichTileIsActive);
             },
             child: _LoadOrSaveIcon(isTilesClickable: isTilesClickable)),
       );
@@ -207,7 +209,7 @@ class _LessonPlanPage extends StatelessWidget {
   Widget _lessonPlanOrLessonHoursShowOrChange(
     int index,
   ) {
-    if ((isTilesClickable == false) && (whichDayIsActive != 5)) {
+    if ((isTilesClickable == false) && (whichTileIsActive != ConstObjects.lessonTile)) {
       return Padding(
         padding: const EdgeInsets.symmetric(
           horizontal: AppDimens.insetsMedium,
