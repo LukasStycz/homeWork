@@ -74,6 +74,7 @@ class _LessonPlanPage extends StatelessWidget {
     );
   }
 
+  // duzy ten widget, podziel na mniejsze
   Widget _changingDaysAndHoursTilesAndChangingPlanButton(BuildContext context) {
     return Row(
       children: [

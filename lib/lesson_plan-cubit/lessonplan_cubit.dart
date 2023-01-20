@@ -32,6 +32,7 @@ class LessonPlanCubit extends Cubit<LessonPlanState> {
     bool isTilesClickable,
     int whichDayIsActive,
   ) async {
+    // tak teraz mysle,to sharedPreferences moglbys stworzyc gdzies wyzej i przekazywac w constructorze do cubita, zeby za kazdym razem nie robic await
     final prefs = await SharedPreferences.getInstance();
     final List<String> currentDayPlan =
         prefs.getStringList(lessonPlanKeys[whichDayIsActive]) ??
@@ -51,6 +52,7 @@ class LessonPlanCubit extends Cubit<LessonPlanState> {
     bool isTilesClickable,
     int whichDayIsActive,
   ) {
+    // currentDayPlan powinno byc zmienna gdzie swyzej zeby sie nie tworzyla nowa zmienna za kazdym razem gdy funkcja loadHours jest wolana
     final List<String> currentDayPlan = [
       '${_hourFormat.format(lessonHours[0].hour)}.${_hourFormat.format(lessonHours[0].minute)}-${_hourFormat.format(lessonHours[1].hour)}.${lessonHours[1].minute}',
       '${_hourFormat.format(lessonHours[2].hour)}.${lessonHours[2].minute}-${_hourFormat.format(lessonHours[3].hour)}.${lessonHours[3].minute}',
@@ -128,10 +130,14 @@ class LessonPlanCubit extends Cubit<LessonPlanState> {
     int whichDayIsActive,
     List<String> currentDayPlan,
   ) {
+    // clickableTiles sugeruje, ze to nie bedzie boolean tylko List<Tiles>
+    // poza tym po co w ogóle Ci ta zmienna? Przeciez to jest to samo co isTilesClickable, mozesz ja calkiem wyejbac
     final bool clickableTiles = isTilesClickable == true;
+    // zmienne notClickableTiles i redoClickableTiles - bez sensu wyjeb je
     const bool notClickableTiles = false;
     const bool redoClickableTiles = true;
     if (clickableTiles) {
+      // uzywaj namedParameters czyli z {}, jak nie wiesz o co chodzi to wpisz w google flutter named parameters
       changePlanLayout(whichDayIsActive,notClickableTiles);
       return notClickableTiles;
     } else {
@@ -152,6 +158,7 @@ class LessonPlanCubit extends Cubit<LessonPlanState> {
   }
 
   Future<void> undoSetNewPlan(whichDayIsActive,tilesClickableOrNot,) async {
+    // nie moze byc po prostu isUndoNeeded?
     final bool checkIfUndoIsNeeded = (_lessonPlanListForUndoSetNewPlan !=
             _initialValueOfLessonPlanListForUndoSetNewPlan) &&
         (_whichDayIsActiveForUndoSetNewPlan !=
