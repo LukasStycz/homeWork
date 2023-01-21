@@ -173,7 +173,6 @@ class _LessonPlanPage extends StatelessWidget {
             backgroundColor: AppColors.tilesTextAndAppBackgroundColor,
             foregroundColor: AppColors.scaffoldIconAndTextColor,
             onPressed: () {
-              bool  clickableTilesSwitch =
                   context.read<LessonPlanCubit>().saveOrUndoSaveNewPlan(
                         isTilesClickable,
                         _controller,
@@ -181,6 +180,7 @@ class _LessonPlanPage extends StatelessWidget {
                         currentDayPlan,
                       );
               if (isTilesClickable == false) {
+                const bool clickableTilesSwitch =true;
                 final snackBar = SnackBar(
                   content: Text(localizations.undoChanges),
                   action: SnackBarAction(
@@ -195,7 +195,6 @@ class _LessonPlanPage extends StatelessWidget {
                 );
                 ScaffoldMessenger.of(context).showSnackBar(snackBar);
               }
-              print(whichTileIsActive);
             },
             child: _LoadOrSaveIcon(isTilesClickable: isTilesClickable)),
       );

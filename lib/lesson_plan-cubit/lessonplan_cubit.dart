@@ -93,13 +93,11 @@ class LessonPlanCubit extends Cubit<LessonPlanState> {
         isTilesClickable,
         whichTileIsActive,
       );
-      print('dzień$whichTileIsActive');
     } else {
       _loadDays(
         isTilesClickable,
         whichTileIsActive,
       );
-      print('dzień$whichTileIsActive');
     }
   }
 
@@ -134,16 +132,16 @@ class LessonPlanCubit extends Cubit<LessonPlanState> {
     return cardColorList;
   }
 
-  bool saveOrUndoSaveNewPlan(
+  void saveOrUndoSaveNewPlan(
     bool isTilesClickable,
     List<TextEditingController> controller,
     int whichTileIsActive,
     List<String> currentDayPlan,
   ) {
     if (isTilesClickable) {
-      return _showTextFieldsForSetNewPlan(whichTileIsActive);
+      _showTextFieldsForSetNewPlan(whichTileIsActive);
     } else {
-      return _setNewPlanAnbBackupForUndo(
+      _setNewPlanAnbBackupForUndo(
         currentDayPlan,
         whichTileIsActive,
         controller,
@@ -151,29 +149,47 @@ class LessonPlanCubit extends Cubit<LessonPlanState> {
     }
   }
 
-  bool _showTextFieldsForSetNewPlan(int whichTileIsActive) {
+  void _showTextFieldsForSetNewPlan(int whichTileIsActive) {
     changePlanLayout(whichTileIsActive, tilesAreNotClickable);
-    return tilesAreNotClickable;
   }
 
-  bool _setNewPlanAnbBackupForUndo(
+  void _setNewPlanAnbBackupForUndo(
     List<String> currentDayPlan,
     int whichTileIsActive,
     List<TextEditingController> controller,
   ) {
+    _backupPlanForUndo(
+      currentDayPlan,
+      whichTileIsActive,
+    );
+    _setNewPlan(
+      whichTileIsActive,
+      controller,
+    );
+  }
+
+  void _backupPlanForUndo(
+    List<String> currentDayPlan,
+    int whichTileIsActive,
+  ) {
     _lessonPlanListForUndoSetNewPlan = currentDayPlan;
     _whichTileIsActiveForUndoSetNewPlan = whichTileIsActive;
+  }
+
+  Future<void> _setNewPlan(
+      int whichTileIsActive,
+      List<TextEditingController> controller,
+      ) async {
     List<String> newPlan = [];
     for (int i = _currentListItem; i <= _listLength; i++) {
       newPlan.add(controller[i].text);
-      _setNewPlan(
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setStringList(
+        ConstObjects.lessonPlanKeys[whichTileIsActive],
         newPlan,
-        whichTileIsActive,
       );
     }
-    print(newPlan);
     changePlanLayout(whichTileIsActive, tilesAreClickable);
-    return tilesAreClickable;
   }
 
   Future<void> undoSetNewPlan(
@@ -197,14 +213,5 @@ class LessonPlanCubit extends Cubit<LessonPlanState> {
     }
   }
 
-  Future<void> _setNewPlan(
-    List<String> newPlan,
-    int whichTileIsActive,
-  ) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList(
-      ConstObjects.lessonPlanKeys[whichTileIsActive],
-      newPlan,
-    );
-  }
+
 }

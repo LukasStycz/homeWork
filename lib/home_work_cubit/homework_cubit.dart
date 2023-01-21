@@ -39,9 +39,9 @@ class HomeworkCubit extends Cubit<HomeworkState> {
         (lessonNumber != _noSuchLesson) && (_isNotWeekend(timeNow.weekday));
     if (isAddNeeded) {
       final prefs = await SharedPreferences.getInstance();
-      final List<String> actualLessonPlan =
-          prefs.getStringList(ConstObjects.lessonPlanKeys[timeNow.weekday - 1]) ??
-              ConstObjects.defaultLessonPlan;
+      final List<String> actualLessonPlan = prefs.getStringList(
+              ConstObjects.lessonPlanKeys[timeNow.weekday - 1]) ??
+          ConstObjects.defaultLessonPlan;
       final homeWorkName = actualLessonPlan[lessonNumber];
       final List<String> homeWorkList = prefs.getStringList(_homeWorkKey) ?? [];
       await prefs.setInt(_dayOfHomeWorkListLastUpdateKey, timeNow.weekday);
@@ -58,9 +58,10 @@ class HomeworkCubit extends Cubit<HomeworkState> {
     final int currentTimeInMinutes = hour * _minutesInHour + minute;
     int lesson = _noSuchLesson;
     if (_isSchoolTime(currentTimeInMinutes)) {
-      for (int lessonIndex = _firstLesson; lessonIndex <= _numberOfLessonsSupportedByApp; lessonIndex++) {
+      for (int lessonIndex = _firstLesson;
+          lessonIndex <= _numberOfLessonsSupportedByApp;
+          lessonIndex++) {
         if (_currentLesson(lessonIndex, currentTimeInMinutes)) {
-          print (lessonIndex);
           lesson = lessonIndex;
         }
       }
@@ -80,9 +81,10 @@ class HomeworkCubit extends Cubit<HomeworkState> {
 
   bool _isSchoolTime(currentTimeInMinutes) {
     final int schoolBeginningTimeInMinutes =
-        lessonHours.first.startTime.hour * _minutesInHour + lessonHours.first.startTime.minute;
-    final int endOfDay =
-        lessonHours.last.endTime.hour * _minutesInHour + lessonHours.last.endTime.hour;
+        lessonHours.first.startTime.hour * _minutesInHour +
+            lessonHours.first.startTime.minute;
+    final int endOfDay = lessonHours.last.endTime.hour * _minutesInHour +
+        lessonHours.last.endTime.hour;
     final bool isSchoolTime =
         (currentTimeInMinutes >= schoolBeginningTimeInMinutes) &&
             (currentTimeInMinutes < endOfDay);
@@ -90,15 +92,13 @@ class HomeworkCubit extends Cubit<HomeworkState> {
   }
 
   int _lessonBeginningInMinutes(int lesson) {
-    return lessonHours[lesson].startTime.hour *
-            _minutesInHour +
+    return lessonHours[lesson].startTime.hour * _minutesInHour +
         lessonHours[lesson].startTime.minute;
   }
 
   int _lessonEndingInMinutes(int lesson) {
-    return lessonHours[lesson+1].startTime.hour *
-        _minutesInHour +
-        lessonHours[lesson+1].startTime.minute;
+    return lessonHours[lesson + 1].startTime.hour * _minutesInHour +
+        lessonHours[lesson + 1].startTime.minute;
   }
 
   void _checkAndAddToListIfNeeded(String lessonName, List homeWorkList) {
