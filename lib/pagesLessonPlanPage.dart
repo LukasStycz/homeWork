@@ -215,6 +215,7 @@ class _LessonPlanPage extends StatelessWidget {
           vertical: AppDimens.insetsBig,
         ),
         child: TextFormField(
+          maxLength: 20,
           controller: _controller[index],
           style: const TextStyle(
               fontSize: AppDimens.fontMedium,

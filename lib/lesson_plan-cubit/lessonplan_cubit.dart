@@ -30,13 +30,6 @@ class LessonPlanCubit extends Cubit<LessonPlanState> {
   List<String> _lessonPlanListForUndoSetNewPlan =
       _initialValueOfLessonPlanListForUndoSetNewPlan;
 
-  static final List<String> currentDayPlan = lessonHours
-      .map((LessonHour lessonHour) =>
-          "${_hourFormat.format(lessonHour.startTime.hour)}"
-          ":${_hourFormat.format(lessonHour.startTime.minute)}"
-          "-${_hourFormat.format(lessonHour.endTime.hour)}"
-          ":${_hourFormat.format(lessonHour.endTime.minute)}")
-      .toList();
 
   static const bool tilesAreNotClickable = false;
   static const bool tilesAreClickable = true;
@@ -74,6 +67,8 @@ class LessonPlanCubit extends Cubit<LessonPlanState> {
   ) {
     final List<CardColors> cardColorList =
         _loadCardColorList(whichTileIsActive);
+    final  List<String> currentDayPlan = _lessonHours();
+
     emit(LessonPlan(
       localizations,
       lessonPlanDaysAndHours,
@@ -212,6 +207,15 @@ class LessonPlanCubit extends Cubit<LessonPlanState> {
       );
     }
   }
-
-
+  List<String>_lessonHours() {
+  List<String> lessonHoursList =  lessonHours
+        .map((LessonHour lessonHour) =>
+    "${_hourFormat.format(lessonHour.startTime.hour)}"
+        ":${_hourFormat.format(lessonHour.startTime.minute)}"
+        "-${_hourFormat.format(lessonHour.endTime.hour)}"
+        ":${_hourFormat.format(lessonHour.endTime.minute)}")
+        .toList();
+  lessonHoursList.removeLast();
+  return lessonHoursList;
+  }
 }
